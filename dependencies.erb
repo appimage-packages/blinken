@@ -1,0 +1,12 @@
+external_build:
+  <% external.each do |external| %>
+    <%= external.to_yaml.sub('---', '-').gsub("\n", '').sub("...", '').gsub("\n", '')%>
+  <% end %>
+distro_packages:
+  <% distro_packages.each do |distro_packages| %>
+    <%= distro_packages.to_yaml.sub('---', '-').gsub("\n", '').sub("...", '').gsub("\n", '')%>
+  <% end %>
+kf5_deps:
+  <% kf5_deps.each do |kf5_deps| %>
+    <%= kf5_deps.to_yaml.sub('---', '-').gsub("\n", '').sub("...", '').gsub("\n", '')%>
+  <% end %>
