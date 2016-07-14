@@ -28,14 +28,6 @@ require 'fileutils'
 app_name = 'blinken'
 version = ''
 
-if not File.exist?(app_name)
-   `git clone http://anongit.kde.org/#{app_name}`
-    Dir.chdir(app_name) do
-     `git submodule init`
-     `git submodule update`
-    end
-end
-
 
 deps = Dependencies.new
 cmake_deps = Dependencies::CMakeDeps.new(app_name)
