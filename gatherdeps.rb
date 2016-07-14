@@ -54,6 +54,7 @@ class Dependencies
               -DCMAKE_BUILD_TYPE=RelWithDebInfo \
               -DBUILD_TESTING=FALSE"
         )
+        system('pwd')
         system("make -j8")
         all = `python3 cmake-dependencies.py | grep '\"project\": '`.sub('\\', '').split(',')
       end      
