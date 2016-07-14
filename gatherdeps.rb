@@ -30,11 +30,13 @@ class Dependencies
   attr_accessor :packages  
   attr_accessor :frameworks
   attr_accessor :external
+  attr_accessor :review_deps
   
   class CMakeDeps
     def initialize(name)
       @name = name 
       @kf5_map = YAML.load_file('frameworks.yaml')  
+      @cmake_deps = run_cmakedependencies
       @kf5 = []
       @external = []
       @packages = []
@@ -72,36 +74,32 @@ class Dependencies
       a
     end
 
-    def get_kf5
-      cmake_deps = run_cmakedependencies
+    def get_kf5      
       oddballs = []
       kf5_base = []
-      cmake_deps.each do |dep|
-        parts = dep.sub('{', '').sub('}', '').split(',')
-        parts.each do |project|        
-          a = project.split.each_slice(3).map{ |x| x.join(' ')}.to_s
-          if a.to_s.include? "project"
-            name = a.gsub((/[^0-9a-z ]/i), '').downcase
-            name.slice! "project "
-          end
-          if ( name == "ecm" )
-            name = "extra-cmake-modules"
-            kf5_base.push name
-          end
-          if ( name =~ /kf5/)
-            oddballs = ["ksolid","kthreadweaver","ksonnet","kattica"]
-            name = name.sub("kf5", "k")
-            oddballs.each do |oddball|
-              if ( name == oddball)
-                name = name.sub("k", '')                  
-              end
-            end            
-            kf5_base.push name  
-          end
+      all_deps = get_cmakedeps
+      all_deps.each do |name|        
+        if ( name == "ecm" )
+          name = "extra-cmake-modules"
+          kf5_base.push name
         end
-      end      
+        if ( name == "phonon4qt5experimental" || name == "phonon4qt5")
+          name = "phonon"
+          kf5_base.push name
+        end
+        if ( name =~ /kf5/)
+          oddballs = ["ksolid","kthreadweaver","ksonnet","kattica"]
+          name = name.sub("kf5", "k")
+          oddballs.each do |oddball|
+            if ( name == oddball)
+              name = name.sub("k", '') 
+            end
+          end
+          kf5_base.push name
+        end                   
+      end
       kf5_base.delete 'k'
-      kf5_base.sort!
+      kf5_base.sort!     
       kf5_base.each do |dep|
         @kf5 |= parse_section("kf5_deps", dep, @kf5)
       end
@@ -113,7 +111,44 @@ class Dependencies
         @packages |= parse_section("distro_packages", dep, @packages)
       end  
       @packages    
-    end    
+    end  
+    
+    def get_external(kf5_deps)
+      kf5_deps.each do |dep|
+        @external |= parse_section("external", dep, @external)
+      end  
+      @external
+    end
+    
+    def get_cmakedeps
+      all_deps = []
+      @cmake_deps.each do |dep|
+        parts = dep.sub('{', '').sub('}', '').split(',')        
+        parts.each do |project|        
+          a = project.split.each_slice(3).map{ |x| x.join(' ')}.to_s
+          if a.to_s.include? "project"
+            name = a.gsub((/[^0-9a-z ]/i), '').downcase
+            name.slice! "project "           
+            all_deps.push name
+          end
+        end        
+      end
+      all_deps
+    end
+    
+    def get_deps_intervention_required 
+      non_kf5 = []
+      all_deps = get_cmakedeps
+      all_deps.each do |name| 
+        non_kf5.push name
+        if ( name =~ /qt5/ || name =~ /kf5/ || name =~ /ecm/ || name == 'packagehandlestandardargs' )         
+          non_kf5.delete name
+        end        
+      end
+      puts non_kf5
+      non_kf5
+    end
+    
   end
 end
 
@@ -127,9 +162,7 @@ end
 # #     
 # #           else
 # #             @dependencies.push name
-# #             if ( name =~ /qt5/ )
-# #               @dependencies.delete name  
-# #             end 
+# #             
 # #           end         
 # #         end
 # #       end

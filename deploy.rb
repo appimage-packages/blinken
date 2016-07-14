@@ -38,15 +38,35 @@ end
 
 deps = Dependencies.new
 cmake_deps = Dependencies::CMakeDeps.new(app_name)
+
+#Retrieve all the framework dependencies with cmake-dependencies.py ( tool from kde-dev-tools)
+#Then it is searched in the frameworks.yaml for dependencies of dependencies. This list needs to be 
+#maintained as dependencies change. TO-DO research a way to automate that?
+#Return as a string so it is usable in the Recipe.erb
 deps.frameworks = cmake_deps.get_kf5.join(' ').to_s
-deps.packages = cmake_deps.get_packages(cmake_deps.get_kf5)
+# From the above frameworks list we now want to gete any package dependencies needed.
+deps.packages = cmake_deps.get_packages(cmake_deps.get_kf5).join(' ').to_s
+# Finally we need a list of dependencies that will need to be built from source ( aka centos package is too old.
+deps.external = cmake_deps.get_external(cmake_deps.get_kf5)
+# These deps are generated with the cmae tool but there is no sane way to get package names or determine automically
+# if they need to be source builds... So we can print them and then place them in the appropriate dependency group. 
+deps.review_deps = cmake_deps.get_deps_intervention_required
+p '====== NEEDS REVIEW ======'
+puts deps.review_deps
+
+p '====== FRAMEWORKS DEPS ======'
 puts deps.frameworks
+p '====== DISTRIBUTION PACKAGES ======'
+#Add any packages from review then print
+deps.packages = deps.packages + ' gettext python33'
 puts deps.packages
+p '====== NEEDS SOURCE BUILDS ======'
+puts deps.external
 
 #Cleanup
 FileUtils.remove_dir(app_name)
-# recipe = Recipe.new(app_name, version)
-# builder = CI.new
-# builder.run = [CI::Build.new()]
-# builder.cmd = %w[bash -ex /in/Recipe]
-# builder.create_container
+recipe = Recipe.new(app_name, version)
+builder = CI.new
+builder.run = [CI::Build.new()]
+builder.cmd = %w[bash -ex /in/Recipe]
+builder.create_container
