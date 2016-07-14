@@ -28,10 +28,12 @@ require 'fileutils'
 app_name = 'blinken'
 version = ''
 
-Dir.chdir(app_name) do
-  `git submodule init`
-  `git submodule update`
-  version = `git describe | sed -e 's/-g.*$// ; s/^v//'`
+if not File.exist?(app_name)
+   `git clone http://anongit.kde.org/#{app_name}`
+    Dir.chdir(app_name) do
+     `git submodule init`
+     `git submodule update`
+    end
 end
 
 
