@@ -57,7 +57,7 @@ p '====== NEEDS SOURCE BUILDS ======'
 puts deps.external
 
 #Cleanup
-FileUtils.remove_dir(app_name)
+#FileUtils.remove_dir(app_name)
 
 #Generate the Recipe file
 recipe = Recipe.new
