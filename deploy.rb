@@ -22,6 +22,7 @@
 
 require_relative 'gatherdeps.rb'
 require_relative 'builddocker.rb'
+require_relative 'generate_recipe.rb'
 require 'fileutils'
 
 app_name = 'blinken'
@@ -65,8 +66,21 @@ puts deps.external
 
 #Cleanup
 FileUtils.remove_dir(app_name)
-recipe = Recipe.new(app_name, version)
+
+#Generate the Recipe file
+recipe = Recipe.new
+recipe.name = app_name
+recipe.version = version 
+recipe.proper_name = app_name.capitalize
+recipe.frameworks = deps.frameworks
+recipe.packages = deps.packages
+recipe.external = deps.external
+recipe.cmake = true
+recipe.wayland = false
+recipe.boost = false
+recipe.app = [Recipe::App.new(app_name)]
+File.write('Recipe', recipe.render)
 builder = CI.new
-builder.run = [CI::Build.new()]
+builder.run = [CI::Build.new(app_name)]
 builder.cmd = %w[bash -ex /in/Recipe]
 builder.create_container

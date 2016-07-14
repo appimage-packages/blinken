@@ -23,7 +23,7 @@ wget -q https://github.com/probonopd/AppImages/raw/master/functions.sh -O ./func
 . ./functions.sh
 rm -f functions.sh
 
-yum -y install gettext perl-URI.noarch bzip2-devel liblzma-devel xz-devel media-player-info.noarch libfam-devel 
+yum -y install gettext perl-URI.noarch libxcb-keysyms1-devel libxcb1-devel libxcb-xtest0-devel gamin-devel gettext python33
 
 QTVERSION=5.7.0
 QVERSION_SHORT=5.7
@@ -61,10 +61,10 @@ export LD_LIBRARY_PATH=/usr/lib64/:/usr/lib:/app/usr/lib:$QTDIR/lib/:/opt/python
 ln -sf /usr/share/pkgconfig /usr/lib/pkgconfig
 
 # Get project
-if [ ! -d /artikulate ] ; then
-   git clone --depth 1 http://anongit.kde.org/artikulate.git /artikulate
+if [ ! -d /blinken ] ; then
+   git clone --depth 1 http://anongit.kde.org/blinken.git /blinken
 fi
-cd /artikulate/
+cd /blinken/
 git_pull_rebase_helper
 
 # Prepare the install location
@@ -85,7 +85,7 @@ function build_cmake
     echo "Compiler version:" $(g++ --version)
     set -e
 
-    SRC=/cmake   
+    SRC=/cmake
     PREFIX=/app/usr/
 
     # framework
@@ -102,11 +102,11 @@ function build_cmake
         git pull --rebase
         cd ..
     else
-        git clone https://github.com/Kitware/CMake cmake
+        git clone https://github.com/Kitware/CMake
     fi
 
     
-    cd $SRC
+    cd CMake
 
     ./bootstrap
     
@@ -121,6 +121,7 @@ if ( true == true )
 then
     build_cmake cmake
 fi
+
 
 function build_wayland
 { (
@@ -235,7 +236,7 @@ function build_external
     make install
 ) }
 
-IN=libarchive,https://github.com/libarchive/libarchive,true,"" 
+IN=[] 
 IFS=',' read -a external_options <<< $IN
 EXTERNAL="${external_options[0]}"
 EXTERNAL_ADDRESS="${external_options[1]}"
@@ -318,7 +319,7 @@ build_framework extra-cmake-modules
 #Cmake is too old on centos6.... so does this mean no sound for KDE apps? blech.
 #build_framework phonon -DPHONON_BUILD_PHONON4QT5=ON
 
-for FRAMEWORK in attica extra-cmake-modules karchive kauth kcodecs kconfig kconfigwidgets kcoreaddons kcrash kdoctools ki18n knewstuff kservice kwidgetsaddons kxmlgui kguiaddons kcompletion kiconthemes kio kitemviews ktextwidgets kdbusaddons kglobalaccel kwindowsystem;
+for FRAMEWORK in extra-cmake-modules kauth kcodecs kconfig kconfigwidgets kcoreaddons kwindowsystem kcrash kdbusaddons kdoctools kguiaddons ki18n kwidgetsaddons attica kglobalaccel kitemviews kiconthemes ktextwidgets kxmlgui phonon;
 do
   build_framework $FRAMEWORK
 done
@@ -328,10 +329,10 @@ build_framework breeze-icons -DBINARY_ICONS_RESOURCE=1
     
 cd ..
 
-# Build artikulate
-mkdir -p /artikulate_build
-cd /artikulate_build
-cmake ../artikulate \
+# Build blinken
+mkdir -p /blinken_build
+cd /blinken_build
+cmake ../blinken \
     -DCMAKE_INSTALL_PREFIX:PATH=/app/usr/ \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DPACKAGERS_BUILD=1 \
@@ -343,6 +344,8 @@ make -j8 install
 ###############################################################
 
 cd /app
+
+ldd usr/bin/#{@name} | grep "=>" | awk '{print $3}' | xargs -I '{}' cp -v '{}' ./usr/lib || true
 
 # FIXME: How to find out which subset of plugins is really needed? I used strace when running the binary
 mkdir -p ./usr/lib/qt5/plugins/
@@ -422,18 +425,20 @@ export APPIMAGE_STARTUP_QT_PLUGIN_PATH=\$QT_PLUGIN_PATH
 export APPIMAGE_STARTUP_XDG_DATA_DIRS=\$XDG_DATA_DIRS
 export APPIMAGE_STARTUP_PATH=\$PATH
 
-artikulate \$@
+blinken \$@
 EOF
 chmod +x AppRun
 
-cp usr/share/applications/org.kde.artikulate.desktop artikulate.desktop
-cp usr/share/icons/hicolor/128x128/apps/artikulate.png .
+cp usr/share/applications/org.kde.blinken.desktop blinken.desktop
+cp usr/share/icons/hicolor/128x128/apps/blinken.png .
 
 #TO-DO this will need some text manipulation in ruby to get this var.
-APP=Artikulate
-LOWERAPP=artikulate
+APP=Blinken
+LOWERAPP=blinken
 
-get_desktopintegration artikulate
+get_desktopintegration blinken
+
+delete_blacklisted
 
 cd  /
 
@@ -453,11 +458,18 @@ cd /$APP/
 
 mv ../app/* $APP.AppDir/
 
-VERSION="git"
-ARCH=$(arch)
+VERSION=16.04.3-2
 
-#TO-DO this will need some text manipulation in ruby to get this var.
-/AppImageKit/AppImageAssistant.AppDir/package Artikulate.AppDir/ /out/$APP-$VERSION-$ARCH.AppImage
+echo $VERSION
 
-#Skip this. Cannot get it to work and I would rather the file local for now.
-#curl --progress-bar --upload-file - https://transfer.sh/$APP-$VERSION-$ARCH.AppImage /out/$APP-$VERSION-$ARCH.AppImage # Upload to transfer.io for testing
+if [[ "$ARCH" = "x86_64" ]] ; then
+	APPIMAGE=$APP"-"$VERSION"-x86_64.AppImage"
+fi
+if [[ "$ARCH" = "i686" ]] ; then
+	APPIMAGE=$APP"-"$VERSION"-i386.AppImage"
+fi
+
+/AppImageKit/AppImageAssistant.AppDir/package Blinken.AppDir/ /out/$APP-$VERSION-$ARCH.AppImage
+
+chmod a+rwx ../out/$APPIMAGE # So that we can edit the AppImage outside of the Docker container
+ls -lh ../out/$APPIMAGE

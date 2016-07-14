@@ -35,6 +35,7 @@ class Dependencies
   class CMakeDeps
     def initialize(name)
       @name = name 
+      @base_dir = Dir.pwd() + '/'
       @kf5_map = YAML.load_file('frameworks.yaml')  
       @cmake_deps = run_cmakedependencies
       @kf5 = []
@@ -45,8 +46,9 @@ class Dependencies
     def run_cmakedependencies        
       all = []
       #Run the cmake-dependencies.py tool from kde-dev-tools 
-      FileUtils.cp('cmake-dependencies.py', @name)
-      Dir.chdir(@name) do
+      
+      FileUtils.cp('cmake-dependencies.py', @base_dir + @name)
+      Dir.chdir(@base_dir + @name) do
         system("cmake \
           -DCMAKE_INSTALL_PREFIX:PATH=/app/usr/ \
           -DCMAKE_BUILD_TYPE=RelWithDebInfo \

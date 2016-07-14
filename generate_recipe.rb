@@ -23,38 +23,28 @@ require 'erb'
 require 'yaml'
 
 class Recipe
-  def initialize(name, version)
-    @name = name  
-    @proper_name = @name.capitalize
-    @version = version
-  end
-
-  attr_accessor :proper_name
-  
+    class App
+      def initialize(name)
+        @name = name  
+      end
+    end
+  attr_accessor :name
+  attr_accessor :version
+  attr_accessor :frameworks
+  attr_accessor :packages
+  attr_accessor :external
+  attr_accessor :proper_name  
   attr_accessor :version
   attr_accessor :summary
   attr_accessor :description
-
-#  attr_accessor :apps
+  attr_accessor :cmake
+  attr_accessor :wayland
+  attr_accessor :boost
+  attr_accessor :app
         
   def render
     ERB.new(File.read('Recipe.erb')).result(binding)
   end
   
   
-
-appimage = Recipe.new
-
-#Needed to add ability to pull in external builds that are simply to old
-#in Centos.
-appimage.external = 'libarchive,https://github.com/libarchive/libarchive,true,""'
-appimage.cmake = true
-appimage.wayland = false
-appimage.boost = false
-#Run gatherdeps local to get dep lists. TO_DO: run on jenkins.
-appimage.dependencies = 'bzip2-devel liblzma-devel xz-devel media-player-info.noarch libfam-devel'
-appimage.frameworks = 'attica extra-cmake-modules karchive kcoreaddons kauth kcodecs kconfig kdoctools kguiaddons ki18n kwidgetsaddons kconfigwidgets kwindowsystem kcrash kcompletion kitemviews kiconthemes kdbusaddons kservice kjobwidgets solid kxmlgui kbookmarks kio ktextwidgets knewstuff kglobalaccel'
-#appimage.apps = [Recipe::App.new("#{appimage.name}")]
-File.write('Recipe', appimage.render)
-    
 end

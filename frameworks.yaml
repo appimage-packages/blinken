@@ -32,6 +32,10 @@ phonon:
 karchive:
   external:
    - cmake
+   - libarchive
+     - "https://github.com/libarchive/libarchive"
+     - true
+     - ""
   distro_packages:
    - bzip2-devel
    - xz-devel
