@@ -49,12 +49,9 @@ class Dependencies
       
       FileUtils.cp('cmake-dependencies.py', @base_dir + @name)
       Dir.chdir(@base_dir + @name) do
-        system("cmake \
-               -DCMAKE_INSTALL_PREFIX:PATH=/app/usr/ \
-              -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-              -DBUILD_TESTING=FALSE"
-        )
+        `cmake -DCMAKE_INSTALL_PREFIX:PATH=/app/usr/ -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_TESTING=FALSE`
         system('pwd')
+        system('ls -l')
         system("make -j8")
         all = `python3 cmake-dependencies.py | grep '\"project\": '`.sub('\\', '').split(',')
       end      
