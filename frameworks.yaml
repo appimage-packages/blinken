@@ -171,6 +171,11 @@ kplotting:
   distro_packages:
   kf5_deps:
    - extra-cmake-modules
+kdbusaddons:
+  external:
+  distro_packages:
+  kf5_deps:
+   - extra-cmake-modules
 kdewebkit:
   external:  
   distro_packages:

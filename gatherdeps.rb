@@ -22,51 +22,71 @@
 
 #attempt to get deps. NOTE: This is for ubuntu/debian based distro
 require 'fileutils'
+ require 'yaml'
 
 
 class Dependencies
-  def initialize(name)
-    @name = name
-    @kf5_dependencies = []
-    @dependencies = []
-  end
-    
-  attr_accessor :cmake
-  attr_accessor :wayland
-  attr_accessor :boost
+  
+  attr_accessor :packages  
   attr_accessor :frameworks
   attr_accessor :external
   
-  def render
-    ERB.new(File.read('dependencies.erb')).result(binding)
-  end
-  
-  def get_cmakedeps
-    cmake_deps = ''
-    oddballs = []
-        
-   #Run the cmake-dependencies.py tool from kde-dev-tools 
-   FileUtils.cp('cmake-dependencies.py', @name)
-   Dir.chdir(@name) do
-    system("cmake \
-    -DCMAKE_INSTALL_PREFIX:PATH=/app/usr/ \
-    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-    -DPACKAGERS_BUILD=1 \
-    -DBUILD_TESTING=FALSE"
-    )
-    system("make -j8")
-    cmake_deps = `python3 cmake-dependencies.py | grep '\"project\": '`.sub('\\', '').split(',')
-   end
-    cmake_deps.each do |dep|
-      parts = dep.sub('{', '').sub('}', '').split(',')
-      parts.each do |project|        
-        a = project.split.each_slice(3).map{ |x| x.join(' ')}.to_s
-        if a.to_s.include? "project"
-          name = a.gsub((/[^0-9a-z ]/i), '').downcase
-          name.slice! "project "
+  class CMakeDeps
+    def initialize(name)
+      @name = name 
+      @kf5_map = YAML.load_file('frameworks.yaml')  
+      @kf5 = []
+      @external = []
+      @packages = []
+    end
+      
+    def run_cmakedependencies        
+      all = []
+      #Run the cmake-dependencies.py tool from kde-dev-tools 
+      FileUtils.cp('cmake-dependencies.py', @name)
+      Dir.chdir(@name) do
+        system("cmake \
+          -DCMAKE_INSTALL_PREFIX:PATH=/app/usr/ \
+          -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+          -DPACKAGERS_BUILD=1 \
+          -DBUILD_TESTING=FALSE"
+        )
+        system("make -j8")
+        all = `python3 cmake-dependencies.py | grep '\"project\": '`.sub('\\', '').split(',')
+      end      
+      all
+    end 
+    
+    def parse_section(section, dep, a)    
+      h = @kf5_map[dep]
+      unless h[section].nil?        
+        h[section]
+        if ( section == "distro_packages" )
+           a |= h[section]    
+        else ( a.include? dep )
+          a.delete dep
+          a |= h[section]
+          a.push dep
+        end
+      end
+      a
+    end
+
+    def get_kf5
+      cmake_deps = run_cmakedependencies
+      oddballs = []
+      kf5_base = []
+      cmake_deps.each do |dep|
+        parts = dep.sub('{', '').sub('}', '').split(',')
+        parts.each do |project|        
+          a = project.split.each_slice(3).map{ |x| x.join(' ')}.to_s
+          if a.to_s.include? "project"
+            name = a.gsub((/[^0-9a-z ]/i), '').downcase
+            name.slice! "project "
+          end
           if ( name == "ecm" )
             name = "extra-cmake-modules"
-            @kf5_dependencies.push name
+            kf5_base.push name
           end
           if ( name =~ /kf5/)
             oddballs = ["ksolid","kthreadweaver","ksonnet","kattica"]
@@ -75,88 +95,101 @@ class Dependencies
               if ( name == oddball)
                 name = name.sub("k", '')                  
               end
-            end
-            @kf5_dependencies.push name
-          else
-            @dependencies.push name
-            if ( name =~ /qt5/ )
-              @dependencies.delete name  
-            end 
-          end         
+            end            
+            kf5_base.push name  
+          end
         end
+      end      
+      kf5_base.delete 'k'
+      kf5_base.sort!
+      kf5_base.each do |dep|
+        @kf5 |= parse_section("kf5_deps", dep, @kf5)
       end
+      @kf5           
     end
-    @kf5_dependencies.delete 'k'
-    @kf5_dependencies.sort!
-    puts @kf5_dependencies
-    #Cleanup
-    FileUtils.remove_dir(@name)
-  end   
-  
-  def parse_depsection(section, dep)
-    kf5_map = YAML.load_file('frameworks.yaml') 
-    #p "Gathering dependencies of " dep
-    p dep
-    h = kf5_map[dep]
-    p h["distro_packages"]
-#     unless h["distro_packages"].nil? 
-#       p " Distribution Packages for #{dep}: "
-#       p h["distro_packages"]
-#       section |= h["distro_packages"]
-#       p "Accumalated packages: "
-#       p section
-#     end 
-  end
-  
-  def gather_deps
-    require 'erb'
-    require 'yaml'
     
-    get_cmakedeps
-    distro_packages = []
-     
-    
-    @kf5_dependencies.each do |dep|
-      @dependencies = parse_depsection(distro_packages, dep)
-    end
+    def get_packages(kf5_deps)
+      kf5_deps.each do |dep|
+        @packages |= parse_section("distro_packages", dep, @packages)
+      end  
+      @packages    
+    end    
   end
-  
 end
 
 
-  
-  
-
 #   
+#   def get_cmakedeps
+#     kde_deps = CMakeDeps.new('blinken')
+#     kde_deps.frameworks = get_kf5
+#     puts kde_deps.frameworks
+# #     cmake_deps = ''
+# #     
+# #           else
+# #             @dependencies.push name
+# #             if ( name =~ /qt5/ )
+# #               @dependencies.delete name  
+# #             end 
+# #           end         
+# #         end
+# #       end
+# #     end
 
-#     puts @dependencies
-#     @dependencies = ""
-#     @dependencies =+ distro_packages.join(' ').to_s + ' ' + dependencies.to_s
-#     @frameworks = kf5_dependencies.join(' ').to_s
-# 
-#      puts @dependencies
-#      puts @frameworks
-#      
-#      File.write('dependencies', render)  
-#      
-#    end    
-#       
-#       unless h["kf5_deps"].nil?
-#        if ( kf5_dependencies.include? dep )
-#          kf5_dependencies.pop dep
-#          kf5_dependencies |= h["kf5_deps"]
-#          kf5_dependencies.push dep
-#        else
-#          kf5_dependencies |= h["kf5_deps"] 
-#          kf5_dependencies.push dep
-#        end
-#       end
-#      end
-#     end
-
+#   end   
   
-  #dependencies from the cmake parsing does not match anything from a distro, so 
-  # these still need to be verified by hand and assigned the proper packages. I see no way around this.
+  
+#   
+#   def gather_deps
+#     require 'erb'
+#     require 'yaml'
+#     
+#     get_cmakedeps     
+#     
+#     @kf5_dependencies.each do |dep|
+#       dependencies = parse_section("distro_packages", dep)
+#       frameworks = parse_section("kf5_deps", dep)
+#       external = parse_section("external", dep)
+#     end
+#      File.write('dependencies', ERB.new(File.read('dependencies.erb')).result(binding))
+#   end
+#   
+# end
+# 
+# 
+# 
+#   
+#   
+# 
+# #   
+# 
+# #     puts @dependencies
+# #     @dependencies = ""
+# #     @dependencies =+ distro_packages.join(' ').to_s + ' ' + dependencies.to_s
+# #     @frameworks = kf5_dependencies.join(' ').to_s
+# # 
+# #      puts @dependencies
+# #      puts @frameworks
+# #      
+# #      File.write('dependencies', render)  
+# #      
+# #    end    
+# #       
+# #       unless h["kf5_deps"].nil?
+# #        if ( kf5_dependencies.include? dep )
+# #          kf5_dependencies.pop dep
+# #          kf5_dependencies |= h["kf5_deps"]
+# #          kf5_dependencies.push dep
+# #        else
+# #          kf5_dependencies |= h["kf5_deps"] 
+# #          kf5_dependencies.push dep
+# #        end
+# #       end
+# #      end
+# #     end
+# 
+#   
+#   #dependencies from the cmake parsing does not match anything from a distro, so 
+#   # these still need to be verified by hand and assigned the proper packages. I see no way around this.
   
 
   

@@ -23,33 +23,28 @@ require 'erb'
 require 'yaml'
 
 class Recipe
-  def initialize(name)
+  def initialize(name, version)
     @name = name  
     @proper_name = @name.capitalize
-    @version = `git describe | sed -e 's/-g.*$// ; s/^v//'`
+    @version = version
   end
 
   attr_accessor :proper_name
-  attr_accessor :dependencies
-  attr_accessor :cmake
-  attr_accessor :wayland
-  attr_accessor :boost
+  
   attr_accessor :version
   attr_accessor :summary
   attr_accessor :description
-  attr_accessor :frameworks
-  attr_accessor :external
+
 #  attr_accessor :apps
         
   def render
     ERB.new(File.read('Recipe.erb')).result(binding)
   end
   
-  def determine_deps(cmake, wayland, boost)
+  
 
 appimage = Recipe.new
 
-appimage.version = '16.04.1'
 #Needed to add ability to pull in external builds that are simply to old
 #in Centos.
 appimage.external = 'libarchive,https://github.com/libarchive/libarchive,true,""'

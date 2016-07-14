@@ -23,7 +23,7 @@ wget -q https://github.com/probonopd/AppImages/raw/master/functions.sh -O ./func
 . ./functions.sh
 rm -f functions.sh
 
-yum -y install gettext perl-URI.noarch <%= dependencies %>
+yum -y install gettext perl-URI.noarch <%= packages %>
 
 QTVERSION=5.7.0
 QVERSION_SHORT=5.7

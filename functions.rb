@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 # 
 # Copyright (C) 2016 Scarlett Clark <sgclark@kde.org>
-# Copyright (C) 2015-2016 Harald Sitter <sitter@kde.org>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -20,33 +19,8 @@
 # You should have received a copy of the GNU Lesser General Public
 # License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-require_relative 'gatherdeps.rb'
-require_relative 'builddocker.rb'
-require 'fileutils'
-
-app_name = 'blinken'
-version = ''
-
-if not File.exists?(app_name)
-    system("git clone http://anongit.kde.org/#{app_name}")
-    Dir.chdir(app_name) do
-      system("git submodule init")
-      system("git submodule update") 
-      version = `git describe | sed -e 's/-g.*$// ; s/^v//'`
-    end
+class Functions
+  attr_accessor :cmake
+  attr_accessor :wayland
+  attr_accessor :boost
 end
-
-deps = Dependencies.new
-cmake_deps = Dependencies::CMakeDeps.new(app_name)
-deps.frameworks = cmake_deps.get_kf5.join(' ').to_s
-deps.packages = cmake_deps.get_packages(cmake_deps.get_kf5)
-puts deps.frameworks
-puts deps.packages
-
-#Cleanup
-FileUtils.remove_dir(app_name)
-# recipe = Recipe.new(app_name, version)
-# builder = CI.new
-# builder.run = [CI::Build.new()]
-# builder.cmd = %w[bash -ex /in/Recipe]
-# builder.create_container
