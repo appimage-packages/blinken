@@ -28,7 +28,6 @@ require 'fileutils'
 app_name = 'blinken'
 version = ''
 
-`git clone http://anongit.kde.org/#{app_name} #{app_name}`
 Dir.chdir(app_name) do
   `git submodule init`
   `git submodule update`
