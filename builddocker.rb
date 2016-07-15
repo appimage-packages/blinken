@@ -51,7 +51,7 @@ class CI
     Docker.options[:read_timeout] = 1 * 60 * 60 # 1 hour
     Docker.options[:write_timeout] = 1 * 60 * 60 # 1 hour   
         
-   def create_container
+    def create_centos_container
         init_logging
         @c = Docker::Container.create(
             'Image' => 'sgclark/centos6.8-qt5.7', 
@@ -75,6 +75,30 @@ class CI
         status_code = ret.fetch('StatusCode', 1)
         raise "Bad return #{ret}" if status_code != 0
         @c.stop!   
-    end   
+     end 
+    
+     def create_neon_container
+        init_logging
+        @c = Docker::Container.create(
+            'Image' => 'sgclark/neon-docker', 
+            'Cmd' => @cmd,
+            'Volumes' => {
+              '/in' => {}             
+            }
+        )
+        p @c.info
+        @log.info 'creating debug thread'
+        Thread.new do
+            @c.attach do |_stream, chunk|
+                puts chunk
+                STDOUT.flush
+            end
+        end
+        @c.start('Binds' => ["/home/jenkins/workspace/appimage-#{@name}/:/in"])      
+        ret = @c.wait
+        status_code = ret.fetch('StatusCode', 1)
+        raise "Bad return #{ret}" if status_code != 0
+        @c.stop!   
+     end
 end
 

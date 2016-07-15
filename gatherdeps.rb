@@ -21,8 +21,9 @@
 # License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 #attempt to get deps. NOTE: This is for ubuntu/debian based distro
+require_relative 'generate_recipe.rb'
 require 'fileutils'
- require 'yaml'
+require 'yaml'
 
 
 class Dependencies
@@ -152,76 +153,50 @@ class Dependencies
 end
 
 
-#   
-#   def get_cmakedeps
-#     kde_deps = CMakeDeps.new('blinken')
-#     kde_deps.frameworks = get_kf5
-#     puts kde_deps.frameworks
-# #     cmake_deps = ''
-# #     
-# #           else
-# #             @dependencies.push name
-# #             
-# #           end         
-# #         end
-# #       end
-# #     end
+app_name = 'blinken'
+version = ''
 
-#   end   
-  
-  
-#   
-#   def gather_deps
-#     require 'erb'
-#     require 'yaml'
-#     
-#     get_cmakedeps     
-#     
-#     @kf5_dependencies.each do |dep|
-#       dependencies = parse_section("distro_packages", dep)
-#       frameworks = parse_section("kf5_deps", dep)
-#       external = parse_section("external", dep)
-#     end
-#      File.write('dependencies', ERB.new(File.read('dependencies.erb')).result(binding))
-#   end
-#   
-# end
-# 
-# 
-# 
-#   
-#   
-# 
-# #   
-# 
-# #     puts @dependencies
-# #     @dependencies = ""
-# #     @dependencies =+ distro_packages.join(' ').to_s + ' ' + dependencies.to_s
-# #     @frameworks = kf5_dependencies.join(' ').to_s
-# # 
-# #      puts @dependencies
-# #      puts @frameworks
-# #      
-# #      File.write('dependencies', render)  
-# #      
-# #    end    
-# #       
-# #       unless h["kf5_deps"].nil?
-# #        if ( kf5_dependencies.include? dep )
-# #          kf5_dependencies.pop dep
-# #          kf5_dependencies |= h["kf5_deps"]
-# #          kf5_dependencies.push dep
-# #        else
-# #          kf5_dependencies |= h["kf5_deps"] 
-# #          kf5_dependencies.push dep
-# #        end
-# #       end
-# #      end
-# #     end
-# 
-#   
-#   #dependencies from the cmake parsing does not match anything from a distro, so 
-#   # these still need to be verified by hand and assigned the proper packages. I see no way around this.
-  
 
-  
+deps = Dependencies.new
+cmake_deps = Dependencies::CMakeDeps.new(app_name)
+
+#Retrieve all the framework dependencies with cmake-dependencies.py ( tool from kde-dev-tools)
+#Then it is searched in the frameworks.yaml for dependencies of dependencies. This list needs to be 
+#maintained as dependencies change. TO-DO research a way to automate that?
+#Return as a string so it is usable in the Recipe.erb
+deps.frameworks = cmake_deps.get_kf5.join(' ').to_s
+# From the above frameworks list we now want to gete any package dependencies needed.
+deps.packages = cmake_deps.get_packages(cmake_deps.get_kf5).join(' ').to_s
+# Finally we need a list of dependencies that will need to be built from source ( aka centos package is too old.
+deps.external = cmake_deps.get_external(cmake_deps.get_kf5)
+# These deps are generated with the cmae tool but there is no sane way to get package names or determine automically
+# if they need to be source builds... So we can print them and then place them in the appropriate dependency group. 
+deps.review_deps = cmake_deps.get_deps_intervention_required
+p '====== NEEDS REVIEW ======'
+puts deps.review_deps
+
+p '====== FRAMEWORKS DEPS ======'
+puts deps.frameworks
+p '====== DISTRIBUTION PACKAGES ======'
+#Add any packages from review then print
+deps.packages = deps.packages + ' gettext python33'
+puts deps.packages
+p '====== NEEDS SOURCE BUILDS ======'
+puts deps.external
+
+#Cleanup
+#FileUtils.remove_dir(app_name)
+
+#Generate the Recipe file
+recipe = Recipe.new
+recipe.name = app_name
+recipe.version = version 
+recipe.proper_name = app_name.capitalize
+recipe.frameworks = deps.frameworks
+recipe.packages = deps.packages
+recipe.external = deps.external
+recipe.cmake = true
+recipe.wayland = false
+recipe.boost = false
+recipe.app = [Recipe::App.new(app_name)]
+File.write('Recipe', recipe.render)
