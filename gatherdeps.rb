@@ -46,6 +46,8 @@ class Dependencies
       
     def run_cmakedependencies        
       all = []
+      # Get deps
+      `apt-get -y build-dep #{@name}`
       #Run the cmake-dependencies.py tool from kde-dev-tools 
       
       FileUtils.cp('cmake-dependencies.py', @base_dir + @name)

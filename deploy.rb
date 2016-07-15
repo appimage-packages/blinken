@@ -24,7 +24,7 @@ require_relative 'builddocker.rb'
 
 builder = CI.new
 builder.run = [CI::Build.new('blinken')]
-builder.cmd = %w[ruby /in/gatherdeps.rb]
+builder.cmd = %w[/usr/bin/ruby /in/gatherdeps.rb]
 builder.create_neon_container
 builder.cmd = %w[bash -ex /in/Recipe]
 builder.create_centos_container
