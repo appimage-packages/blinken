@@ -82,9 +82,10 @@ class CI
         @c = Docker::Container.create(
             'Image' => 'sgclark/neon-docker',
             'Cmd' => @cmd,
-            'Volumes' => {
-              '/in' => {}
-            }
+                'Volumes' => {
+                  '/in' => {},
+                  '/out' => {}
+                }
         )
         p @c.info
         @log.info 'creating debug thread'
@@ -94,7 +95,8 @@ class CI
                 STDOUT.flush
             end
         end
-        @c.start('Binds' => ["/home/jenkins/workspace/appimage-#{@name}/:/in"])
+        @c.start('Binds' => ["/home/jenkins/workspace/appimage-#{@name}/:/in",
+                             "/home/jenkins/workspace/appimage-#{@name}/out:/out"])
         ret = @c.wait
         status_code = ret.fetch('StatusCode', 1)
         raise "Bad return #{ret}" if status_code != 0
