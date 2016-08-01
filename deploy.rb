@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
-# 
+#
 # Copyright (C) 2016 Scarlett Clark <sgclark@kde.org>
 # Copyright (C) 2015-2016 Harald Sitter <sitter@kde.org>
 #
@@ -24,7 +24,7 @@ require_relative 'builddocker.rb'
 
 builder = CI.new
 builder.run = [CI::Build.new('blinken')]
-builder.cmd = %w[/usr/bin/ruby /in/gatherdeps.rb]
+builder.cmd = %w[ruby /in/gatherdeps.rb]
 builder.create_neon_container
-# builder.cmd = %w[bash -ex /in/Recipe]
-# builder.create_centos_container
+builder.cmd = %w[bash -ex /in/Recipe]
+builder.create_centos_container

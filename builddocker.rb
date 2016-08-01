@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
-# 
+#
 # Copyright (C) 2016 Scarlett Clark <sgclark@kde.org>
 # Copyright (C) 2015-2016 Harald Sitter <sitter@kde.org>
 #
@@ -25,8 +25,8 @@ require 'logger'
 require 'logger/colors'
 
 
-class CI     
-    class Build        
+class CI
+    class Build
         def initialize(name)
             @image = ''
             @c = ''
@@ -41,20 +41,20 @@ class CI
 
         Thread.new do
             # :nocov:
-            Docker::Event.stream { |event| @log.debug event }        
+            Docker::Event.stream { |event| @log.debug event }
             # :nocov:
         end
-    end    
+    end
     attr_accessor :run
-    attr_accessor :cmd 
-    
+    attr_accessor :cmd
+
     Docker.options[:read_timeout] = 1 * 60 * 60 # 1 hour
-    Docker.options[:write_timeout] = 1 * 60 * 60 # 1 hour   
-        
-    def create_centos_container
+    Docker.options[:write_timeout] = 1 * 60 * 60 # 1 hour
+
+    def create_trusty_container
         init_logging
         @c = Docker::Container.create(
-            'Image' => 'sgclark/centos6.8-qt5.7', 
+            'Image' => 'sgclark/trusty-minimal',
             'Cmd' => @cmd,
             'Volumes' => {
               '/in' => {},
@@ -70,20 +70,20 @@ class CI
             end
         end
         @c.start('Binds' => ["/home/jenkins/workspace/appimage-#{@name}/:/in",
-                             "/home/jenkins/workspace/appimage-#{@name}/out:/out"])      
+                             "/home/jenkins/workspace/appimage-#{@name}/out:/out"])
         ret = @c.wait
         status_code = ret.fetch('StatusCode', 1)
         raise "Bad return #{ret}" if status_code != 0
-        @c.stop!   
-     end 
-    
+        @c.stop!
+     end
+
      def create_neon_container
         init_logging
         @c = Docker::Container.create(
-            'Image' => 'sgclark/neon-docker', 
+            'Image' => 'sgclark/neon-docker',
             'Cmd' => @cmd,
             'Volumes' => {
-              '/in' => {}             
+              '/in' => {}
             }
         )
         p @c.info
@@ -94,11 +94,10 @@ class CI
                 STDOUT.flush
             end
         end
-        @c.start('Binds' => ["/home/jenkins/workspace/appimage-#{@name}/:/in"])      
+        @c.start('Binds' => ["/home/jenkins/workspace/appimage-#{@name}/:/in"])
         ret = @c.wait
         status_code = ret.fetch('StatusCode', 1)
         raise "Bad return #{ret}" if status_code != 0
-        @c.stop!   
+        @c.stop!
      end
 end
-
