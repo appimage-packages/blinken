@@ -151,7 +151,7 @@ describe Recipe do
       arch = `arch`.to_s.delete!('\n')
       appfullname = "#{app.name}-#{version}-#{arch}.AppImage"
       p appfullname
-      expect(File.exist?("/appimage/blinken-git~11302016-x86_64.AppImage")).to be(true), "Something went wrong, no AppImage"
+      expect(File.exist?("/appimage/blinken-git12012016-x86_64.AppImage")).to be(true), "Something went wrong, no AppImage"
       `rm -rfv /app/*`
       `rm -f functions.sh`
       expect(Dir["/app/*"].empty?).to be(true), "Please clean up"
