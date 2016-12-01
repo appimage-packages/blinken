@@ -2,7 +2,7 @@ name: blinken
 packages:
   - pkg-config
   #app specifc
-  - gamin-dev
+  - libgamin-dev
 frameworks:
   build_kf5: true
   frameworks:
