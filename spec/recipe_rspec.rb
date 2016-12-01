@@ -148,7 +148,7 @@ describe Recipe do
       File.write('/in/Recipe', app.render)
       expect(app.generate_appimage()).to eq 0
       version = app.set_version()
-      arch = `arch`.to_s.delete
+      arch = `arch`.to_s.delete!('\n')
       appfullname = "#{app.name}-#{version}-#{arch}.AppImage"
       p appfullname
       expect(File.exist?("/appimage/#{appfullname}")).to be(true), "Something went wrong, no AppImage"
