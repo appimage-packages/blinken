@@ -1,0 +1,474 @@
+#!/bin/bash
+
+# Based on http://files.svenbrauch.de/kdevelop-linux/kdevelop-recipe-centos6.sh
+
+# On Amazon AWS start an Amazon Linux instance (I used c4.2xlarge) and run:
+# sudo yum -y install docker
+# sudo service docker start
+# sudo docker run -i -t scummos/centos6.8-qt5.7
+# wget -c https://github.com/appimage-packages/kcalc/Recipe
+# bash -ex Recipe
+
+# Halt on errors
+set -e
+
+# Be verbose
+set -x
+
+# Now we are inside CentOS 6
+grep -r "CentOS release 6" /etc/redhat-release || exit 1
+
+# Get helper functions
+wget -q https://github.com/probonopd/AppImages/raw/master/functions.sh -O ./functions.sh
+. ./functions.sh
+rm -f functions.sh
+
+yum -y install gettext perl-URI.noarch <%= packages %>
+
+QTVERSION=5.7.0
+QVERSION_SHORT=5.7
+QTDIR=/usr/local/Qt-${QTVERSION}/
+
+# qjsonparser, used to add metadata to the plugins needs to work in a en_US.UTF-8 environment. That's
+# not always set correctly in CentOS 6.7
+export LC_ALL=en_US.UTF-8
+export LANG=en_us.UTF-8
+
+# Determine which architecture should be built
+if [[ "$(arch)" = "i686" || "$(arch)" = "x86_64" ]] ; then
+  ARCH=$(arch)
+else
+  echo "Architecture could not be determined"
+  exit 1
+fi
+
+# Make sure we build from the /, parts of this script depends on that. We also need to run as root...
+cd  /
+
+# Use the new compiler
+. /opt/rh/devtoolset-4/enable
+
+# TO-DO ask about this.
+export CMAKE_PREFIX_PATH=$QTDIR:/app/share/llvm/
+
+# if the library path doesn't point to our usr/lib, linking will be broken and we won't find all deps either
+export LD_LIBRARY_PATH=/usr/lib64/:/usr/lib:/app/usr/lib:$QTDIR/lib/:/opt/python3.5/lib/:$LD_LIBRARY_PATH
+
+# Workaround for: On CentOS 6, .pc files in /usr/lib/pkgconfig are not recognized
+# However, this is where .pc files get installed when bulding libraries... (FIXME)
+# I found this by comparing the output of librevenge's "make install" command
+# between Ubuntu and CentOS 6
+ln -sf /usr/share/pkgconfig /usr/lib/pkgconfig
+
+# Get project
+if [ ! -d /<%= name %> ] ; then
+   git clone --depth 1 http://anongit.kde.org/<%= name %>.git /<%= name %>
+fi
+cd /<%= name %>/
+git_pull_rebase_helper
+
+# Prepare the install location
+rm -rf /app/ || true
+mkdir -p /app/usr
+
+# export LLVM_ROOT=/opt/llvm/
+
+# make sure lib and lib64 are the same thing
+mkdir -p /app/usr/lib
+cd  /app/usr
+ln -s lib lib64
+
+# start building the deps
+function build_cmake
+{ (
+     # errors fatal
+    echo "Compiler version:" $(g++ --version)
+    set -e
+
+    SRC=/cmake
+    PREFIX=/app/usr/
+
+    # framework
+    CMAKE=$1
+
+    # clone if not there
+    mkdir -p $SRC
+    cd $SRC
+    if ( test -d $CMAKE )
+    then
+        echo "$CMAKE already cloned"
+        cd $CMAKE
+        git reset --hard
+        git pull --rebase
+        cd ..
+    else
+        git clone https://github.com/Kitware/CMake
+    fi
+
+    
+    cd CMake
+
+    ./bootstrap
+    
+    # make
+    make -j8
+
+    # install
+    make install
+
+) }
+if ( <%= cmake %> == true )
+then
+    build_cmake cmake
+fi
+
+
+function build_wayland
+{ (
+ # errors fatal
+    echo "Compiler version:" $(g++ --version)
+    set -e
+
+    SRC=/wayland
+
+    WAYLAND=$1
+    # clone if not there
+    mkdir -p $SRC
+    cd $SRC
+
+    export WLD=/app/usr/   # change this to another location if you prefer
+    export LD_LIBRARY_PATH=$WLD/lib
+    export PKG_CONFIG_PATH=$WLD/lib/pkgconfig/:$WLD/share/pkgconfig/
+    export PATH=$WLD/bin:$PATH
+    export ACLOCAL_PATH=$WLD/share/aclocal
+    export ACLOCAL="aclocal -I $ACLOCAL_PATH"
+
+    mkdir -p $WLD/share/aclocal # needed by autotools
+    
+    #autoconf is too old on centos6
+    wget http://ftp.gnu.org/gnu/autoconf/autoconf-2.69.tar.gz
+    tar xvfvz autoconf-2.69.tar.gz
+    cd autoconf-2.69
+    ./configure --prefix=$WLD
+    make -j8
+    make install
+    #wayland
+    git clone git://anongit.freedesktop.org/wayland/$WAYLAND
+    cd $WAYLAND
+    ./autogen.sh --prefix=$WLD
+    make -j8
+    make install
+    cd .. 
+) }
+if ( <%= wayland %> == true )
+then
+    build_wayland wayland
+fi
+
+function build_boost
+{ (
+     # errors fatal
+    echo "Compiler version:" $(g++ --version)
+    set -e
+
+    SRC=/boost
+
+    BOOST=$1
+    # clone if not there
+    mkdir -p $SRC
+    cd $SRC
+    
+    wget https://sourceforge.net/projects/boost/files/boost/1.61.0/boost_1_61_0.tar.bz2
+    tar --bzip2 -xf boost_1_61_0.tar.bz2
+    cd boost_1_61_0
+    ./bootstrap.sh --prefix=/app/usr
+    ./b2 install
+) }
+if ( <%= boost %> == true )
+then
+    build_boost boost
+fi
+
+function build_external
+{ (
+    # errors fatal
+    echo "Compiler version:" $(g++ --version)
+    set -e
+
+    SRC=/external
+    BUILD=/external/build
+    PREFIX=/app/usr/
+
+    # framework
+    EXTERNAL=$1
+
+    # clone if not there
+    mkdir -p $SRC
+    cd $SRC
+    if ( test -d $EXTERNAL )
+    then
+        echo "$EXTERNAL already cloned"
+        cd $EXTERNAL
+        git reset --hard
+        git pull --rebase
+        cd ..
+    else
+        git clone $EXTERNAL_ADDRESS
+    fi
+
+    # create build dir
+    mkdir -p $BUILD/$EXTERNAL
+
+    # go there
+    cd $BUILD/$EXTERNAL
+
+    # cmake it
+    if ( $EXTERNAL_CMAKE )
+    then
+        cmake $SRC/$EXTERNAL -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX $2
+    else
+        $EXTERNAL_CONFIGURE
+    fi
+    # make
+    make -j8
+
+    # install
+    make install
+) }
+
+IN=<%= external %> 
+IFS=',' read -a external_options <<< $IN
+EXTERNAL="${external_options[0]}"
+EXTERNAL_ADDRESS="${external_options[1]}"
+EXTERNAL_CMAKE="${external_options[2]}"
+EXTERNAL_CONFIGURE="${external_options[3]}"
+build_external $EXTERNAL
+
+function build_framework
+{ (
+    # errors fatal
+    echo "Compiler version:" $(g++ --version)
+    set -e
+
+    SRC=/kf5
+    BUILD=/kf5/build
+    PREFIX=/app/usr/
+
+    # framework
+    FRAMEWORK=$1
+
+    # clone if not there
+    mkdir -p $SRC
+    cd $SRC
+    if ( test -d $FRAMEWORK )
+    then
+        echo "$FRAMEWORK already cloned"
+        cd $FRAMEWORK
+        git reset --hard
+        git pull --rebase
+        cd ..
+    else
+        git clone git://anongit.kde.org/$FRAMEWORK
+    fi
+    
+    if [ "$FRAMEWORK" = "knotifications" ]; then
+	cd $FRAMEWORK
+        echo "patching knotifications"
+	git reset --hard        
+	cat > no_phonon.patch << EOF
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index b97425f..8f15f08 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -59,10 +59,10 @@ find_package(KF5Config ${KF5_DEP_VERSION} REQUIRED)
+ find_package(KF5Codecs ${KF5_DEP_VERSION} REQUIRED)
+ find_package(KF5CoreAddons ${KF5_DEP_VERSION} REQUIRED)
+ 
+-find_package(Phonon4Qt5 4.6.60 REQUIRED NO_MODULE)
++find_package(Phonon4Qt5 4.6.60 NO_MODULE)
+ set_package_properties(Phonon4Qt5 PROPERTIES
+    DESCRIPTION "Qt-based audio library"
+-   TYPE REQUIRED
++   TYPE OPTIONAL
+    PURPOSE "Required to build audio notification support")
+ if (Phonon4Qt5_FOUND)
+   add_definitions(-DHAVE_PHONON4QT5)
+EOF
+	cat no_phonon.patch |patch -p1
+	cd ..
+    fi
+
+    # create build dir
+    mkdir -p $BUILD/$FRAMEWORK
+
+    # go there
+    cd $BUILD/$FRAMEWORK
+
+    # cmake it
+    cmake $SRC/$FRAMEWORK -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX $2
+
+    # make
+    make -j8
+
+    # install
+    make install
+) }
+
+#TO-DO script these extras
+build_framework extra-cmake-modules
+#Cmake is too old on centos6.... so does this mean no sound for KDE apps? blech.
+#build_framework phonon -DPHONON_BUILD_PHONON4QT5=ON
+
+for FRAMEWORK in <%= frameworks %>;
+do
+  build_framework $FRAMEWORK
+done
+build_framework breeze-icons -DBINARY_ICONS_RESOURCE=1
+
+
+    
+cd ..
+
+# Build <%= name %>
+mkdir -p /<%= name %>_build
+cd /<%= name %>_build
+cmake ../<%= name %> \
+    -DCMAKE_INSTALL_PREFIX:PATH=/app/usr/ \
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+    -DPACKAGERS_BUILD=1 \
+    -DBUILD_TESTING=FALSE
+make -j8 install
+
+###############################################################
+# Build complete, AppImage bundling begins here
+###############################################################
+
+cd /app
+
+ldd usr/bin/#{@name} | grep "=>" | awk '{print $3}' | xargs -I '{}' cp -v '{}' ./usr/lib || true
+
+# FIXME: How to find out which subset of plugins is really needed? I used strace when running the binary
+mkdir -p ./usr/lib/qt5/plugins/
+
+PLUGINS=$(dirname $QTDIR/plugins/bearer)
+
+cp -r $PLUGINS/{bearer,generic,imageformats,platforms,iconengines,platforminputcontexts,xcbglintegrations} ./usr/lib/qt5/plugins/
+# cp -r $PLUGINS/platformthemes ./usr/lib/qt5/plugins/
+
+cp -ru /usr/share/mime/* /app/usr/share/mime
+update-mime-database /app/usr/share/mime/
+
+mv ./usr/lib/plugins/* ./usr/lib/qt5/plugins/
+
+copy_deps
+mv usr/local/Qt-*/lib/* usr/lib
+rm -rf usr/local/
+mv lib64/* usr/lib/
+rm -rf lib64/
+mv ./opt/python3.5/lib/* usr/lib
+# mv ./opt/llvm/lib/* usr/lib
+rm  -rf ./opt/
+rm -rf app/
+
+delete_blacklisted
+
+# We don't bundle the developer stuff
+rm -rf usr/include || true
+rm -rf usr/lib/cmake || true
+rm -rf usr/lib/pkgconfig || true
+rm -rf usr/share/ECM/ || true
+rm -rf usr/share/gettext || true
+rm -rf usr/share/pkgconfig || true
+rm -rf rm -rf ./usr/mkspecs/ || true
+find . -name '*.a' -exec rm {} \;
+
+strip -g $(find usr) || true
+
+mv usr/lib/libexec/kf5/* /app/usr/bin/
+
+cd /
+if [ ! -d appimage-exec-wrapper ]; then
+    git clone git://anongit.kde.org/scratch/brauch/appimage-exec-wrapper
+fi;
+cd /appimage-exec-wrapper/
+make clean
+make
+
+cd /app
+cp -v /appimage-exec-wrapper/exec.so exec_wrapper.so
+
+cat > AppRun << EOF
+#!/bin/bash
+
+DIR="\`dirname \"\$0\"\`" 
+DIR="\`( cd \"\$DIR\" && pwd )\`"
+export APPDIR=\$DIR
+
+export LD_PRELOAD=\$DIR/exec_wrapper.so
+
+export APPIMAGE_ORIGINAL_QML2_IMPORT_PATH=\$QML2_IMPORT_PATH
+export APPIMAGE_ORIGINAL_LD_LIBRARY_PATH=\$LD_LIBRARY_PATH
+export APPIMAGE_ORIGINAL_QT_PLUGIN_PATH=\$QT_PLUGIN_PATH
+export APPIMAGE_ORIGINAL_XDG_DATA_DIRS=\$XDG_DATA_DIRS
+export APPIMAGE_ORIGINAL_PATH=\$PATH
+
+export QML2_IMPORT_PATH=\$DIR/usr/lib/qml:\$QML2_IMPORT_PATH
+export LD_LIBRARY_PATH=\$DIR/usr/lib/:\$LD_LIBRARY_PATH
+export QT_PLUGIN_PATH=\$DIR/usr/lib/qt5/plugins/
+export XDG_DATA_DIRS=\$DIR/usr/share/:\$XDG_DATA_DIRS
+export PATH=\$DIR/usr/bin:\$PATH
+export KDE_FORK_SLAVES=1
+
+export APPIMAGE_STARTUP_QML2_IMPORT_PATH=\$QML2_IMPORT_PATH
+export APPIMAGE_STARTUP_LD_LIBRARY_PATH=\$LD_LIBRARY_PATH
+export APPIMAGE_STARTUP_QT_PLUGIN_PATH=\$QT_PLUGIN_PATH
+export APPIMAGE_STARTUP_XDG_DATA_DIRS=\$XDG_DATA_DIRS
+export APPIMAGE_STARTUP_PATH=\$PATH
+
+<%= name %> \$@
+EOF
+chmod +x AppRun
+
+cp usr/share/applications/org.kde.<%= name %>.desktop <%= name %>.desktop
+cp usr/share/icons/hicolor/128x128/apps/<%= name %>.png .
+
+#TO-DO this will need some text manipulation in ruby to get this var.
+APP=<%= proper_name %>
+LOWERAPP=<%= name %>
+
+get_desktopintegration <%= name %>
+
+delete_blacklisted
+
+cd  /
+
+# Build AppImageKit
+if [ ! -d AppImageKit ] ; then
+  git clone  --depth 1 https://github.com/probonopd/AppImageKit.git /AppImageKit
+fi
+
+cd /AppImageKit/
+git_pull_rebase_helper
+./build.sh
+
+cd /
+
+mkdir -p /$APP/$APP.AppDir
+cd /$APP/
+
+mv ../app/* $APP.AppDir/
+
+VERSION=<%= version %>
+echo $VERSION
+
+if [[ "$ARCH" = "x86_64" ]] ; then
+	APPIMAGE=$APP"-"$VERSION"-x86_64.AppImage"
+fi
+if [[ "$ARCH" = "i686" ]] ; then
+	APPIMAGE=$APP"-"$VERSION"-i386.AppImage"
+fi
+
+/AppImageKit/AppImageAssistant.AppDir/package <%= proper_name %>.AppDir/ /out/$APP-$VERSION-$ARCH.AppImage
+
+chmod a+rwx ../out/$APPIMAGE # So that we can edit the AppImage outside of the Docker container
+ls -lh ../out/$APPIMAGE
