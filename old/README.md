@@ -1,2 +1,0 @@
-# blinken
-appimage for blinken
