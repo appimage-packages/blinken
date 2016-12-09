@@ -81,6 +81,7 @@ cp /app/usr/share/icons/hicolor/scalable/apps/*<%= name %>* .
 mkdir ./etc; mv /app/etc $_
 mkdir ./usr; mv /app/usr/* ./usr/
 
+export LD_LIBRARY_PATH=./usr/lib/:\$LD_LIBRARY_PATH
 #mkdir -p ./usr/lib/x86_64-linux-gnu/plugins; mv /app/usr/lib/x86_64-linux-gnu/plugins $_
 ldconfig -v
 ../linuxdeployqt-1-x86_64.AppImage <%= name %> -verbose=3 -bundle-non-qt-libs -qmldir=/opt/usr/qml
