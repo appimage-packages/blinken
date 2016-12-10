@@ -58,8 +58,8 @@ export APPIMAGE_ORIGINAL_XDG_DATA_DIRS=\$XDG_DATA_DIRS
 export APPIMAGE_ORIGINAL_PATH=\$PATH
 
 export QML2_IMPORT_PATH=\$DIR/usr/lib/qml:\$QML2_IMPORT_PATH
-export QT_PLUGIN_PATH=\$DIR/usr/lib/qt5/plugins/
-export LD_LIBRARY_PATH=\$QT_PLUGIN_PATH:\$DIR/usr/lib/:\$LD_LIBRARY_PATH
+export QT_PLUGIN_PATH=\$DIR/opt/usr/lib/plugins/
+export LD_LIBRARY_PATH=\$QT_PLUGIN_PATH:\$DIR/usr/lib/:\$DIR/usr/lib/x86_64-linux-gnu:\$LD_LIBRARY_PATH
 export XDG_DATA_DIRS=\$DIR/usr/share/:\$XDG_DATA_DIRS
 export PATH=\$DIR/usr/bin:\$PATH
 export KDE_FORK_SLAVES=1
