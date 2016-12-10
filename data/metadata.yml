@@ -78,6 +78,7 @@ packages:
   - bison
   - libxslt1-dev
   - libgpgme11-dev
+  - bzr
   #app specifc
   - libgamin-dev
 frameworks:
