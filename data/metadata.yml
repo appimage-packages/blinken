@@ -139,7 +139,7 @@ dependencies:
       build:
         buildsystem: cmake
         buildoptions: ''
-      depname: qt-gstreamer
+      depname: qt-gstreamer-1.2.0
       source:
         type: xz
         url: 'https://gstreamer.freedesktop.org/src/qt-gstreamer/qt-gstreamer-1.2.0.tar.xz'
