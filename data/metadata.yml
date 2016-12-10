@@ -77,6 +77,7 @@ packages:
   - flex
   - bison
   - libxslt1-dev
+  - libgpgme11-dev
   #app specifc
   - libgamin-dev
 frameworks:
@@ -111,6 +112,7 @@ frameworks:
     - phonon
     - knotifications
     - kwallet
+    - gpgmepp
 type: git
 url: http://anongit.kde.org/blinken
 buildsystem: cmake
@@ -124,3 +126,19 @@ dependencies:
       source:
         type: none
         url: ''
+  - libdbusmenu-qt:
+      build:
+        buildsystem: cmake
+        buildoptions: ''
+      depname: libdbusmenu-qt
+      source:
+        type: bzr
+        url: 'lp:libdbusmenu-qt'
+  - qt-gstreamer:
+      build:
+        buildsystem: cmake
+        buildoptions: ''
+      depname: qt-gstreamer
+      source:
+        type: xz
+        url: 'https://gstreamer.freedesktop.org/src/qt-gstreamer/qt-gstreamer-1.2.0.tar.xz'

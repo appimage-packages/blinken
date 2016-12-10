@@ -80,6 +80,7 @@ cp /app/usr/share/icons/hicolor/scalable/apps/*<%= name %>* .
 #Move everything except libs into AppDir
 mkdir ./etc; mv /app/etc $_
 mkdir ./usr; mv /app/usr/* ./usr/
+mkdir ./lib mv ./usr/lib/* $_
 mv ./usr/lib/libexec/kf5/* ./usr/bin/ || true
 update-mime-database ./usr/share/mime/
 
@@ -112,8 +113,6 @@ patch_usr
 delete_blacklisted
 #get_apprun
 get_desktopintegration <%= name %>
-
-
 
 cd /
 wget "https://github.com/probonopd/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
