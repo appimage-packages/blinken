@@ -80,7 +80,7 @@ cp /app/usr/share/icons/hicolor/scalable/apps/*<%= name %>* .
 #Move everything except libs into AppDir
 mkdir ./etc; mv /app/etc $_
 mkdir ./usr; mv /app/usr/* ./usr/
-mkdir ./lib mv ./usr/lib/* $_
+mkdir ./lib; mv ./usr/lib/* $_
 mv ./usr/lib/libexec/kf5/* ./usr/bin/ || true
 update-mime-database ./usr/share/mime/
 
