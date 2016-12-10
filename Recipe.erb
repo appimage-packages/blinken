@@ -27,13 +27,13 @@ rm -f functions.sh
 
 mkdir /<%= name %>.AppDir/
 
-cd /app/src
+<!-- cd /app/src
 git clone git://anongit.kde.org/scratch/brauch/appimage-exec-wrapper
 cd /app/src/appimage-exec-wrapper/
 make clean
 make
 cp -v exec.so /<%= name %>.AppDir/exec_wrapper.so
-rm -rfv  /app/src/appimage-exec-wrapper
+rm -rfv  /app/src/appimage-exec-wrapper -->
 
 cd /
 wget https://github.com/probonopd/linuxdeployqt/releases/download/1/linuxdeployqt-1-x86_64.AppImage
@@ -41,7 +41,7 @@ chmod a+x linuxdeployqt-1-x86_64.AppImage
 
 cd /<%= name %>.AppDir
 
-# Create AppRun
+<!-- # Create AppRun
 cat > AppRun << EOF
 #!/bin/bash
 
@@ -68,7 +68,7 @@ export APPIMAGE_STARTUP_QML2_IMPORT_PATH=\$QML2_IMPORT_PATH
 export APPIMAGE_STARTUP_LD_LIBRARY_PATH=\$LD_LIBRARY_PATH
 export APPIMAGE_STARTUP_QT_PLUGIN_PATH=\$QT_PLUGIN_PATH
 export APPIMAGE_STARTUP_XDG_DATA_DIRS=\$XDG_DATA_DIRS
-export APPIMAGE_STARTUP_PATH=\$PATH
+export APPIMAGE_STARTUP_PATH=\$PATH -->
 
 <%= name %> \$@
 EOF
@@ -89,6 +89,7 @@ ldconfig -v
 glibc_needed
 patch_usr
 delete_blacklisted
+get_apprun
 get_desktopintegration <%= name %>
 
 #Cleanup
