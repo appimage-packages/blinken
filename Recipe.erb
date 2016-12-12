@@ -47,29 +47,23 @@ cat > AppRun << EOF
 
 DIR="\`dirname \"\$0\"\`"
 DIR="\`( cd \"\$DIR\" && pwd )\`"
-export APPDIR=\$DIR
-
 export LD_PRELOAD=\$DIR/exec_wrapper.so
-
 export APPIMAGE_ORIGINAL_QML2_IMPORT_PATH=\$QML2_IMPORT_PATH
 export APPIMAGE_ORIGINAL_LD_LIBRARY_PATH=\$LD_LIBRARY_PATH
 export APPIMAGE_ORIGINAL_QT_PLUGIN_PATH=\$QT_PLUGIN_PATH
 export APPIMAGE_ORIGINAL_XDG_DATA_DIRS=\$XDG_DATA_DIRS
 export APPIMAGE_ORIGINAL_PATH=\$PATH
-
 export QML2_IMPORT_PATH=\$DIR/usr/lib/qml:\$QML2_IMPORT_PATH
-export QT_PLUGIN_PATH=\$DIR/opt/usr/plugins:\$DIR/usr/lib/x86_64-linux-gnu/plugins:\$QT_PLUGIN_PATH
+export QT_PLUGIN_PATH=\$DIR/usr/lib/plugins:\$DIR/usr/lib/x86_64-linux-gnu/plugins:\$QT_PLUGIN_PATH
 export LD_LIBRARY_PATH=\$QT_PLUGIN_PATH:\$DIR/usr/lib/:\$DIR/usr/lib/x86_64-linux-gnu:\$LD_LIBRARY_PATH
 export XDG_DATA_DIRS=\$DIR/usr/share/:\$XDG_DATA_DIRS
 export PATH=\$DIR/usr/bin:\$PATH
 export KDE_FORK_SLAVES=1
-
 export APPIMAGE_STARTUP_QML2_IMPORT_PATH=\$QML2_IMPORT_PATH
 export APPIMAGE_STARTUP_LD_LIBRARY_PATH=\$LD_LIBRARY_PATH
 export APPIMAGE_STARTUP_QT_PLUGIN_PATH=\$QT_PLUGIN_PATH
 export APPIMAGE_STARTUP_XDG_DATA_DIRS=\$XDG_DATA_DIRS
 export APPIMAGE_STARTUP_PATH=\$PATH
-
 <%= name %> \$@
 EOF
 chmod +x AppRun
@@ -80,10 +74,10 @@ cp /app/usr/share/icons/hicolor/scalable/apps/*<%= name %>* .
 #Move everything except libs into AppDir
 mkdir ./etc; mv /app/etc $_
 mkdir ./usr; mv /app/usr/{share,bin} ./usr/
-mkdir -p ./usr/lib/x86_64-linux-gnu/plugins; mv /app/usr/lib/x86_64-linux-gnu/plugins $_
+mkdir -p ./usr/lib/plugins; mv /app/usr/lib/x86_64-linux-gnu/plugins/* $_
 mv ./usr/lib/libexec/kf5/* ./usr/bin/ || true
 update-mime-database ./usr/share/mime/
-
+rsync -aruxv --progress /opt/usr/lib/plugins/ ./usr/lib/plugins/
 #Cleanup
 # We don't bundle the developer stuff
 rm -rf usr/include || true
