@@ -41,7 +41,7 @@ chmod a+x linuxdeployqt-1-x86_64.AppImage
 
 cd /<%= name %>.AppDir
 
-# Create AppRun
+<!-- # Create AppRun
 cat > AppRun << EOF
 #!/bin/bash
 
@@ -72,7 +72,7 @@ export APPIMAGE_STARTUP_PATH=\$PATH
 
 <%= name %> \$@
 EOF
-chmod +x AppRun
+chmod +x AppRun -->
 cp /app/usr/bin/<%= name %> .
 cp /app/usr/share/applications/*<%= name %>*.desktop <%= name %>.desktop
 cp /app/usr/share/icons/hicolor/scalable/apps/*<%= name %>* .
@@ -109,7 +109,7 @@ ldconfig -v
 glibc_needed
 patch_usr
 delete_blacklisted
-#get_apprun
+get_apprun
 get_desktopintegration <%= name %>
 
 cd /
