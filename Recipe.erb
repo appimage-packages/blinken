@@ -77,7 +77,7 @@ mkdir ./usr; mv /app/usr/{share,bin} ./usr/
 mkdir -p ./plugins; mv /app/usr/lib/x86_64-linux-gnu/plugins/* $_
 mv ./usr/lib/libexec/kf5/* ./usr/bin/ || true
 mv ./usr/lib/x86_64-linux-gnu/* ./usr/lib/ || true # AppRun sets Qt env here
-cp /usr/lib/x86_64-linux-gnu/pulseaudio/*.so ./lib/
+cp /usr/lib/x86_64-linux-gnu/pulseaudio/*.so ./usr/lib/
 #update-mime-database ./usr/share/mime/
 
 #Cleanup
@@ -97,7 +97,7 @@ find . -name '*.a' -exec rm {} \;
 
 strip -g $(find usr) || true
 
-export LD_LIBRARY_PATH=/app/lib/x86_64-linux-gnu/:/app/usr/lib/:/app/usr/lib/x86_64-linux-gnu/:./usr/lib/x86_64-linux-gnu/pulseaudio:\$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/app/lib/x86_64-linux-gnu/:/app/usr/lib/:/app/usr/lib/x86_64-linux-gnu/:./usr/lib:\$LD_LIBRARY_PATH
 
 ldconfig -v
 ../linuxdeployqt-1-x86_64.AppImage <%= name %> -verbose=3 -bundle-non-qt-libs -qmldir=/opt/usr/qml
