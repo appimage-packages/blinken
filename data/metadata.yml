@@ -79,6 +79,7 @@ packages:
   - libxslt1-dev
   - libgpgme11-dev
   - bzr
+  - doxygen
   #app specifc
   - libgamin-dev
 frameworks:
@@ -127,6 +128,14 @@ dependencies:
       source:
         type: none
         url: ''
+  - qjson:
+      build:
+        buildsystem: cmake
+        buildoptions: ''
+      depname: qjson
+      source:
+        type: git
+        url: 'https://github.com/flavio/qjson'
   - libdbusmenu-qt:
       build:
         buildsystem: cmake
