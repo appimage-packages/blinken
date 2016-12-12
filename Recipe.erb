@@ -41,9 +41,9 @@ chmod a+x linuxdeployqt-1-x86_64.AppImage
 
 cd /<%= name %>.AppDir
 
-Create AppRun
+#Create AppRun
 cat > AppRun << EOF
-!/bin/bash
+#!/bin/bash
 
 DIR="\`dirname \"\$0\"\`"
 DIR="\`( cd \"\$DIR\" && pwd )\`"
