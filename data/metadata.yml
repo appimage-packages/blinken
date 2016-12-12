@@ -117,7 +117,7 @@ frameworks:
 type: git
 url: http://anongit.kde.org/blinken
 buildsystem: cmake
-buildoptions: "-DCMAKE_INSTALL_PREFIX=/app/usr -DBUILD_TESTING=OFF"
+buildoptions: "-DCMAKE_INSTALL_PREFIX=/app/usr -DBUILD_TESTING=OFF -DCMAKE_SKIP_RPATH=TRUE"
 dependencies:
   - cpan:
       build:
