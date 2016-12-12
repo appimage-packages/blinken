@@ -27,13 +27,13 @@ rm -f functions.sh
 
 mkdir /<%= name %>.AppDir/
 
-cd /app/src
-git clone git://anongit.kde.org/scratch/brauch/appimage-exec-wrapper
-cd /app/src/appimage-exec-wrapper/
-make clean
-make
-cp -v exec.so /<%= name %>.AppDir/exec_wrapper.so
-rm -rfv  /app/src/appimage-exec-wrapper
+# cd /app/src
+# git clone git://anongit.kde.org/scratch/brauch/appimage-exec-wrapper
+# cd /app/src/appimage-exec-wrapper/
+# make clean
+# make
+# cp -v exec.so /<%= name %>.AppDir/exec_wrapper.so
+# rm -rfv  /app/src/appimage-exec-wrapper
 
 cd /
 wget https://github.com/probonopd/linuxdeployqt/releases/download/1/linuxdeployqt-1-x86_64.AppImage
@@ -41,32 +41,32 @@ chmod a+x linuxdeployqt-1-x86_64.AppImage
 
 cd /<%= name %>.AppDir
 
-#Create AppRun
-cat > AppRun << EOF
-#!/bin/bash
-
-DIR="\`dirname \"\$0\"\`"
-DIR="\`( cd \"\$DIR\" && pwd )\`"
-export LD_PRELOAD=\$DIR/exec_wrapper.so
-export APPIMAGE_ORIGINAL_QML2_IMPORT_PATH=\$QML2_IMPORT_PATH
-export APPIMAGE_ORIGINAL_LD_LIBRARY_PATH=\$LD_LIBRARY_PATH
-export APPIMAGE_ORIGINAL_QT_PLUGIN_PATH=\$QT_PLUGIN_PATH
-export APPIMAGE_ORIGINAL_XDG_DATA_DIRS=\$XDG_DATA_DIRS
-export APPIMAGE_ORIGINAL_PATH=\$PATH
-export QML2_IMPORT_PATH=\$DIR/usr/lib/qml:\$QML2_IMPORT_PATH
-export QT_PLUGIN_PATH=\$DIR/plugins
-export LD_LIBRARY_PATH=\$QT_PLUGIN_PATH:\$DIR/usr/lib/:\$DIR/usr/lib/x86_64-linux-gnu:\$LD_LIBRARY_PATH
-export XDG_DATA_DIRS=\$DIR/usr/share/:\$XDG_DATA_DIRS
-export PATH=\$DIR/usr/bin:\$PATH
-export KDE_FORK_SLAVES=1
-export APPIMAGE_STARTUP_QML2_IMPORT_PATH=\$QML2_IMPORT_PATH
-export APPIMAGE_STARTUP_LD_LIBRARY_PATH=\$LD_LIBRARY_PATH
-export APPIMAGE_STARTUP_QT_PLUGIN_PATH=\$QT_PLUGIN_PATH
-export APPIMAGE_STARTUP_XDG_DATA_DIRS=\$XDG_DATA_DIRS
-export APPIMAGE_STARTUP_PATH=\$PATH
-<%= name %> \$@
-EOF
-chmod +x AppRun
+# #Create AppRun
+# cat > AppRun << EOF
+# #!/bin/bash
+#
+# DIR="\`dirname \"\$0\"\`"
+# DIR="\`( cd \"\$DIR\" && pwd )\`"
+# export LD_PRELOAD=\$DIR/exec_wrapper.so
+# export APPIMAGE_ORIGINAL_QML2_IMPORT_PATH=\$QML2_IMPORT_PATH
+# export APPIMAGE_ORIGINAL_LD_LIBRARY_PATH=\$LD_LIBRARY_PATH
+# export APPIMAGE_ORIGINAL_QT_PLUGIN_PATH=\$QT_PLUGIN_PATH
+# export APPIMAGE_ORIGINAL_XDG_DATA_DIRS=\$XDG_DATA_DIRS
+# export APPIMAGE_ORIGINAL_PATH=\$PATH
+# export QML2_IMPORT_PATH=\$DIR/usr/lib/qml:\$QML2_IMPORT_PATH
+# export QT_PLUGIN_PATH=\$DIR/plugins
+# export LD_LIBRARY_PATH=\$QT_PLUGIN_PATH:\$DIR/usr/lib/:\$DIR/usr/lib/x86_64-linux-gnu:\$LD_LIBRARY_PATH
+# export XDG_DATA_DIRS=\$DIR/usr/share/:\$XDG_DATA_DIRS
+# export PATH=\$DIR/usr/bin:\$PATH
+# export KDE_FORK_SLAVES=1
+# export APPIMAGE_STARTUP_QML2_IMPORT_PATH=\$QML2_IMPORT_PATH
+# export APPIMAGE_STARTUP_LD_LIBRARY_PATH=\$LD_LIBRARY_PATH
+# export APPIMAGE_STARTUP_QT_PLUGIN_PATH=\$QT_PLUGIN_PATH
+# export APPIMAGE_STARTUP_XDG_DATA_DIRS=\$XDG_DATA_DIRS
+# export APPIMAGE_STARTUP_PATH=\$PATH
+# <%= name %> \$@
+# EOF
+# chmod +x AppRun
 cp /app/usr/bin/<%= name %> .
 cp /app/usr/share/applications/*<%= name %>*.desktop <%= name %>.desktop
 cp /app/usr/share/icons/hicolor/scalable/apps/*<%= name %>* .
@@ -76,7 +76,9 @@ mkdir ./etc; mv /app/etc $_
 mkdir ./usr; mv /app/usr/{share,bin} ./usr/
 mkdir -p ./plugins; mv /app/usr/lib/x86_64-linux-gnu/plugins/* $_
 mv ./usr/lib/libexec/kf5/* ./usr/bin/ || true
-update-mime-database ./usr/share/mime/
+mv ./usr/lib/x86_64-linux-gnu/* ./usr/lib/ # AppRun sets Qt env here
+cp /usr/lib/pulseaudio/*.so usr/lib/
+#update-mime-database ./usr/share/mime/
 
 #Cleanup
 # We don't bundle the developer stuff
@@ -103,6 +105,7 @@ ldconfig -v
 glibc_needed
 patch_usr
 delete_blacklisted
+get_apprun
 get_desktopintegration <%= name %>
 
 cd /
