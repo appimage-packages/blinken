@@ -102,7 +102,7 @@ find . -name '*.a' -exec rm {} \;
 strip -g $(find usr) || true
 
 export LD_LIBRARY_PATH=/app/lib/x86_64-linux-gnu/:/app/usr/lib/:/app/usr/lib/x86_64-linux-gnu/:./usr/lib/x86_64-linux-gnu/pulseaudio:\$LD_LIBRARY_PATH
-#mkdir -p ./usr/lib/x86_64-linux-gnu/plugins; mv /app/usr/lib/x86_64-linux-gnu/plugins $_
+mkdir -p ./usr/lib/x86_64-linux-gnu/plugins; mv /app/usr/lib/x86_64-linux-gnu/plugins $_
 ldconfig -v
 ../linuxdeployqt-1-x86_64.AppImage <%= name %> -verbose=3 -bundle-non-qt-libs -qmldir=/opt/usr/qml
 
