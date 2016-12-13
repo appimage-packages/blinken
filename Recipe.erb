@@ -56,7 +56,7 @@ EXEC=$(grep -e '^Exec=.*' "${HERE}"/*.desktop | head -n 1 | cut -d "=" -f 2 | cu
 exec "${EXEC}" $@
 EOF
 chmod +x AppRun
-cp /app/usr/bin/<%= name %> .
+mv /app/usr/bin/<%= name %> .
 cp /app/usr/share/applications/*<%= name %>*.desktop <%= name %>.desktop
 cp /app/usr/share/icons/hicolor/scalable/apps/*<%= name %>* .
 
@@ -99,7 +99,7 @@ fi
 strip -g $(find usr) || true
 
 export LD_LIBRARY_PATH=/opt/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
-../linuxdeployqt-1-x86_64.AppImage <%= name %> -verbose=3 -bundle-non-qt-libs -qmldir=/opt/usr/qml
+../linuxdeployqt-1-x86_64.AppImage <%= name %> -style bundle -verbose=3 -bundle-non-qt-libs -qmldir=/opt/usr/qml
 
 glibc_needed
 patch_usr
