@@ -46,10 +46,10 @@ cat > AppRun << EOF
 #!/bin/sh
 HERE="$(dirname "$(readlink -f "${0}")")"
 export LD_PRELOAD="${HERE}/exec_wrapper.so"
-export QML2_IMPORT_PATH="${HERE}/usr/lib/qml:\$QML2_IMPORT_PATH"
+export QML2_IMPORT_PATH="${HERE}/qml:\$QML2_IMPORT_PATH"
 export QT_PLUGIN_PATH="${HERE}/plugins"
 export LD_LIBRARY_PATH="\$QT_PLUGIN_PATH:${HERE}/lib:\${HERE}/usr/lib:${HERE}/usr/lib/x86_64-linux-gnu:\$LD_LIBRARY_PATH"
-export XDG_DATA_DIRS="${HERE}/usr/share/:\$XDG_DATA_DIRS"
+export XDG_DATA_DIRS="${HERE}/usr/share/:${HERE}/share/\$XDG_DATA_DIRS"
 export PATH="${HERE}/usr/bin:\$PATH"
 export KDE_FORK_SLAVES=1
 EXEC=$(grep -e '^Exec=.*' "${HERE}"/*.desktop | head -n 1 | cut -d "=" -f 2 | cut -d " " -f 1)
@@ -89,9 +89,9 @@ cp /usr/lib/x86_64-linux-gnu/pulseaudio/*.so ./lib/
 #update-mime-database ./usr/share/mime/
 # Prevent Qt from loading plugins from the system
 unset QTPATH
-QTPATH=$(find usr/lib -type d -name qt4 -or -name qt5 | sed -e 's|usr/|../|g')
+QTPATH=$(find ./plugins -type d)
 if [ ! -z $QTPATH ] ; then
-cat > usr/bin/qt.conf <<EOF
+cat > ./usr/bin/qt.conf <<EOF
 [Paths]
 Prefix = $QTPATH
 EOF
