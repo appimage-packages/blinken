@@ -70,6 +70,10 @@ cd /<%= name %>.AppDir
 cp /app/usr/bin/<%= name %> .
 cp /app/usr/share/applications/*<%= name %>*.desktop <%= name %>.desktop
 cp /app/usr/share/icons/hicolor/scalable/apps/*<%= name %>* .
+
+#Move everything except libs into AppDir
+mkdir ./etc; mv /app/etc $_
+mkdir ./usr; mv /app/usr/{share,lib,bin} ./usr/
 #Cleanup
 # We don't bundle the developer stuff
 rm -rf ./usr/include || true
@@ -85,9 +89,6 @@ rm -rf ./usr/autoconf-* || true
 rm -rf ./usr/automake-* || true
 rm -rf ./usr/libtool-* || true
 find . -name '*.a' -exec rm {} \;
-#Move everything except libs into AppDir
-mkdir ./etc; mv /app/etc $_
-mkdir ./usr; mv /app/usr/{share,lib,bin} ./usr/
 mkdir ./lib
 mv ./usr/lib/x86_64-linux-gnu/* ./lib/ || true # AppRun sets Qt env here
 mv ./usr/lib/* ./lib/
