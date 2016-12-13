@@ -74,9 +74,9 @@ cp /app/usr/share/icons/hicolor/scalable/apps/*<%= name %>* .
 #Move everything except libs into AppDir
 mkdir ./etc; mv /app/etc $_
 mkdir ./usr; mv /app/usr/{share,lib,bin} ./usr/
-
-mv /app/usr/lib/x86_64-linux-gnu/* ./usr/lib/ || true # AppRun sets Qt env here
-
+mkdir ./lib
+mv ./usr/lib/x86_64-linux-gnu/* ./lib/ || true # AppRun sets Qt env here
+mv ./usr/lib/* ./lib/
 cp /usr/lib/x86_64-linux-gnu/pulseaudio/*.so ./usr/lib/
 #update-mime-database ./usr/share/mime/
 
