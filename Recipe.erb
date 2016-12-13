@@ -43,28 +43,17 @@ cd /<%= name %>.AppDir
 
 #Create AppRun
 cat > AppRun << EOF
-#!/bin/bash
-
-DIR="\`dirname \"\$0\"\`"
-DIR="\`( cd \"\$DIR\" && pwd )\`"
-export LD_PRELOAD=\$DIR/exec_wrapper.so
-export APPIMAGE_ORIGINAL_QML2_IMPORT_PATH=\$QML2_IMPORT_PATH
-export APPIMAGE_ORIGINAL_LD_LIBRARY_PATH=\$LD_LIBRARY_PATH
-export APPIMAGE_ORIGINAL_QT_PLUGIN_PATH=\$QT_PLUGIN_PATH
-export APPIMAGE_ORIGINAL_XDG_DATA_DIRS=\$XDG_DATA_DIRS
-export APPIMAGE_ORIGINAL_PATH=\$PATH
-export QML2_IMPORT_PATH=\$DIR/usr/lib/qml:\$QML2_IMPORT_PATH
-export QT_PLUGIN_PATH=\$DIR/plugins
-export LD_LIBRARY_PATH=\$QT_PLUGIN_PATH:\$DIR/lib:\$DIR/usr/lib/:\$DIR/usr/lib/x86_64-linux-gnu:\$LD_LIBRARY_PATH
-export XDG_DATA_DIRS=\$DIR/usr/share/:\$XDG_DATA_DIRS
-export PATH=\$DIR/usr/bin:\$PATH
+#!/bin/sh
+HERE="$(dirname "$(readlink -f "${0}")")"
+export LD_PRELOAD="${HERE}/exec_wrapper.so"
+export QML2_IMPORT_PATH="${HERE}/usr/lib/qml:\$QML2_IMPORT_PATH"
+export QT_PLUGIN_PATH="${HERE}/plugins"
+export LD_LIBRARY_PATH="\$QT_PLUGIN_PATH:${HERE}/lib:\${HERE}/usr/lib:${HERE}/usr/lib/x86_64-linux-gnu:\$LD_LIBRARY_PATH"
+export XDG_DATA_DIRS="${HERE}/usr/share/:\$XDG_DATA_DIRS"
+export PATH="${HERE}/usr/bin:\$PATH"
 export KDE_FORK_SLAVES=1
-export APPIMAGE_STARTUP_QML2_IMPORT_PATH=\$QML2_IMPORT_PATH
-export APPIMAGE_STARTUP_LD_LIBRARY_PATH=\$LD_LIBRARY_PATH
-export APPIMAGE_STARTUP_QT_PLUGIN_PATH=\$QT_PLUGIN_PATH
-export APPIMAGE_STARTUP_XDG_DATA_DIRS=\$XDG_DATA_DIRS
-export APPIMAGE_STARTUP_PATH=\$PATH
-<%= name %> \$@
+EXEC=$(grep -e '^Exec=.*' "${HERE}"/*.desktop | head -n 1 | cut -d "=" -f 2 | cut -d " " -f 1)
+exec "${EXEC}" $@
 EOF
 chmod +x AppRun
 cp /app/usr/bin/<%= name %> .
@@ -91,7 +80,8 @@ rm -rf ./usr/automake-* || true
 rm -rf ./usr/libtool-* || true
 find . -name '*.a' -exec rm {} \;
 mkdir ./lib
-mv ./usr/lib/x86_64-linux-gnu/plugins* ./plugins/ || true
+mkdir ./plugins
+mv ./usr/lib/x86_64-linux-gnu/plugins/* ./plugins/ || true
 mv ./usr/lib/x86_64-linux-gnu/* ./lib/ || true # AppRun sets Qt env here
 mv ./usr/lib/* ./lib/ || true
 cp /usr/lib/x86_64-linux-gnu/pulseaudio/*.so ./lib/
