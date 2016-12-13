@@ -113,8 +113,8 @@ frameworks:
     - kio
     - phonon
     - knotifications
-    - kwallet
     - gpgmepp
+    - kwallet
 type: git
 url: http://anongit.kde.org/blinken
 buildsystem: cmake
