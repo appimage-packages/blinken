@@ -97,7 +97,7 @@ cp /usr/lib/x86_64-linux-gnu/pulseaudio/*.so ./usr/lib/
 
 strip -g $(find usr) || true
 
-../linuxdeployqt-1-x86_64.AppImage <%= name %> -verbose=3 -bundle-non-qt-libs -qmldir=/opt/usr/qml
+../linuxdeployqt-1-x86_64.AppImage <%= name %> -verbose=3 -bundle-non-qt-libs -qmldir=/opt/usr/qml -libpath=./lib
 
 glibc_needed
 patch_usr
