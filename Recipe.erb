@@ -76,8 +76,9 @@ mkdir ./etc; mv /app/etc $_
 mkdir ./usr; mv /app/usr/{share,bin} ./usr/
 mkdir -p ./usr/lib/
 mkdir -p ./plugins; mv /app/usr/lib/x86_64-linux-gnu/plugins/* $_
-mv ./usr/lib/libexec/kf5/* ./usr/bin/ || true
-mv ./usr/lib/x86_64-linux-gnu/* ./usr/lib/ || true # AppRun sets Qt env here
+mv /app/usr/lib/libexec/kf5/* ./usr/bin/ || true
+mv /app/usr/lib/x86_64-linux-gnu/* ./usr/lib/ || true # AppRun sets Qt env here
+mv /app/usr/lib/* ./usr/lib/ || true
 cp /usr/lib/x86_64-linux-gnu/pulseaudio/*.so ./usr/lib/
 #update-mime-database ./usr/share/mime/
 
