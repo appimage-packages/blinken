@@ -94,6 +94,7 @@ mv ./usr/lib/x86_64-linux-gnu/plugins* ./plugins/ || true
 mv ./usr/lib/x86_64-linux-gnu/* ./lib/ || true # AppRun sets Qt env here
 mv ./usr/lib/* ./lib/ || true
 cp /usr/lib/x86_64-linux-gnu/pulseaudio/*.so ./lib/
+cp -rv /opt/usr/lib/x86_64-linux-gnu/plugins/* ./plugins/
 #update-mime-database ./usr/share/mime/
 
 strip -g $(find usr) || true
