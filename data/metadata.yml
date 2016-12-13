@@ -80,8 +80,10 @@ packages:
   - libgpgme11-dev
   - bzr
   - doxygen
+  - libsphinxbase-dev
   #app specifc
   - libgamin-dev
+  - media-player-info
 frameworks:
   build_kf5: true
   frameworks:
@@ -106,6 +108,7 @@ frameworks:
     - sonnet
     - ktextwidgets
     - kglobalaccel
+    - attica
     - kxmlgui
     - solid
     - kbookmarks
