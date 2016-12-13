@@ -96,12 +96,12 @@ Prefix = $QTPATH
 EOF
 fi
 strip -g $(find -t b) || true
-
+find ./ -type f -executable -exec sed -i -e 's|/usr|././|g' '{}' ';'
 export LD_LIBRARY_PATH=/opt/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
 ../linuxdeployqt-1-x86_64.AppImage <%= name %> -verbose=3 -bundle-non-qt-libs -qmldir=/opt/usr/qml
 
 glibc_needed
-patch_usr
+
 delete_blacklisted
 get_desktopintegration <%= name %>
 
