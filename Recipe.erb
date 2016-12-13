@@ -99,7 +99,8 @@ cp -rv /opt/usr/lib/x86_64-linux-gnu/plugins/* ./plugins/
 
 strip -g $(find usr) || true
 
-../linuxdeployqt-1-x86_64.AppImage <%= name %> -verbose=3 -bundle-non-qt-libs -qmldir=/opt/usr/qml -libpath=/opt/usr/lib/x86_64-linux-gnu
+export LD_LIBRARY_PATH=/opt/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
+../linuxdeployqt-1-x86_64.AppImage <%= name %> -verbose=3 -bundle-non-qt-libs -qmldir=/opt/usr/qml
 
 glibc_needed
 patch_usr
