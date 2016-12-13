@@ -78,7 +78,7 @@ mkdir -p ./usr/lib/
 mkdir -p ./plugins; mv /app/usr/lib/x86_64-linux-gnu/plugins/* $_
 mv ./usr/lib/libexec/kf5/* ./usr/bin/ || true
 mv ./usr/lib/x86_64-linux-gnu/* ./usr/lib/ || true # AppRun sets Qt env here
-cp /usr/lib/x86_64-linux-gnu/pulseaudio/*.so
+cp /usr/lib/x86_64-linux-gnu/pulseaudio/*.so ./usr/lib/
 #update-mime-database ./usr/share/mime/
 
 #Cleanup
