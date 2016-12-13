@@ -150,7 +150,7 @@ dependencies:
   - qt-gstreamer:
       build:
         buildsystem: cmake
-        buildoptions: ''
+        buildoptions: '-DQT_VERSION=5'
       depname: qt-gstreamer-1.2.0
       source:
         type: xz
