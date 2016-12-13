@@ -92,7 +92,7 @@ find . -name '*.a' -exec rm {} \;
 mkdir ./lib
 mv ./usr/lib/x86_64-linux-gnu/plugins* ./plugins/ || true
 mv ./usr/lib/x86_64-linux-gnu/* ./lib/ || true # AppRun sets Qt env here
-mv ./usr/lib/* ./lib/
+mv ./usr/lib/* ./lib/ || true
 cp /usr/lib/x86_64-linux-gnu/pulseaudio/*.so ./usr/lib/
 #update-mime-database ./usr/share/mime/
 
