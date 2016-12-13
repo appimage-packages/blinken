@@ -87,7 +87,15 @@ mv ./usr/lib/* ./lib/ || true
 cp /usr/lib/x86_64-linux-gnu/pulseaudio/*.so ./lib/
 #cp -rv /opt/usr/lib/x86_64-linux-gnu/plugins/* ./plugins/
 #update-mime-database ./usr/share/mime/
-
+# Prevent Qt from loading plugins from the system
+unset QTPATH
+QTPATH=$(find usr/lib -type d -name qt4 -or -name qt5 | sed -e 's|usr/|../|g')
+if [ ! -z $QTPATH ] ; then
+cat > usr/bin/qt.conf <<EOF
+[Paths]
+Prefix = $QTPATH
+EOF
+fi
 strip -g $(find usr) || true
 
 export LD_LIBRARY_PATH=/opt/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
