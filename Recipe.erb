@@ -81,7 +81,7 @@ find . -name '*.a' -exec rm {} \;
 mkdir ./lib
 mkdir ./plugins
 cp -rv /opt/usr/share/* ./share/
-rm -rfv ./share/cmake-3.7/
+#rm -rfv ./share/cmake-3.7/
 mv /opt/usr/plugins/kf5/* ./plugins/ || true
 cp /usr/lib/x86_64-linux-gnu/pulseaudio/*.so ./lib/
 #cp -rv /opt/usr/lib/x86_64-linux-gnu/plugins/* ./plugins/
@@ -95,13 +95,14 @@ cat > ./usr/bin/qt.conf <<EOF
 Prefix = $QTPATH
 EOF
 fi
-strip -g $(find -t b) || true
+strip -g $(find ./ -type b) || true
 find ./ -type f -executable -exec sed -i -e 's|/usr|././|g' '{}' ';'
-export LD_LIBRARY_PATH=/opt/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
 ../linuxdeployqt-1-x86_64.AppImage <%= name %> -verbose=3 -bundle-non-qt-libs -qmldir=/opt/usr/qml
 
 #All the plugins do not seem to be getting in. Manual copy.
-cp -rfv /opt/usr/plugins/{xcbglintegrations,platformthemes,platforminputcontexts,iconengines,styles} ./plugins
+cp -rfv /opt/usr/plugins/{xcbglintegrations,platformthemes,platforminputcontexts,iconengines,styles} ./plugins/
+# It also seems libQt5XcbQpa is missing
+cp /opt/usr/lib/libQt5XcbQpa* ./lib/
 glibc_needed
 delete_blacklisted
 mkdir -p ./usr/bin/
