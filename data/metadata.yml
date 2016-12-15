@@ -82,7 +82,7 @@ packages:
   - doxygen
   - libsphinxbase-dev
   - libboost-all-dev
-  - pocketsphinx
+  - sphinx-common
   - libaspell-dev
   - hspell
   - libhunspell-dev
