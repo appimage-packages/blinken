@@ -114,11 +114,11 @@ frameworks:
     - solid
     - kbookmarks
     - kjobwidgets
+    - knotifications
+    - kwallet
     - kio
     - phonon
-    - knotifications
     - gpgmepp
-    - kwallet
 type: git
 url: http://anongit.kde.org/blinken
 buildsystem: cmake
@@ -156,3 +156,11 @@ dependencies:
       source:
         type: xz
         url: 'https://gstreamer.freedesktop.org/src/qt-gstreamer/qt-gstreamer-1.2.0.tar.xz'
+  - gpgme:
+      build:
+        buildsystem: make
+        buildoptions: ''
+      depname: gpgme
+      source:
+        type: xz
+        url: 'git://git.gnupg.org/gpgme.git'
