@@ -64,6 +64,7 @@ mv bin/<%= name %> .
 mv share/applications/*<%= name %>*.desktop <%= name %>.desktop
 cp share/icons/hicolor/scalable/apps/*<%= name %>* .
 cp -rv /opt/usr/share/* ./share/
+cp -rv /opt/usr/lib/* ./lib/
 rm -rfv ./share/cmake-3.7/
 #Cleanup
 # We don't bundle the developer stuff
