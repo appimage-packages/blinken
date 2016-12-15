@@ -82,6 +82,13 @@ packages:
   - doxygen
   - libsphinxbase-dev
   - libboost-all-dev
+  - pocketsphinx
+  - libaspell-dev
+  - hspell
+  - libhunspell-dev
+  - libvoikko-dev
+  - libxcb-xtest0-dev
+  - libacl1-dev
   #app specifc
   - libgamin-dev
   - media-player-info
@@ -93,6 +100,7 @@ frameworks:
     - ki18n
     - kitemviews
     - kconfig
+    - polkit-qt-1
     - kauth
     - kcodecs
     - karchive
@@ -114,10 +122,10 @@ frameworks:
     - solid
     - kbookmarks
     - kjobwidgets
+    - phonon
     - knotifications
     - kwallet
     - kio
-    - phonon
     - gpgmepp
 type: git
 url: http://anongit.kde.org/blinken
