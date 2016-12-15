@@ -101,7 +101,7 @@ export LD_LIBRARY_PATH=/opt/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
 ../linuxdeployqt-1-x86_64.AppImage <%= name %> -verbose=3 -bundle-non-qt-libs -qmldir=/opt/usr/qml
 
 #All the plugins do not seem to be getting in. Manual copy.
-cp -rfv /opt/usr/plugins/{xcbglintegrations,platformthemes,platforminputcontexts,iconengines,accessible,styles} ./plugins
+cp -rfv /opt/usr/plugins/{xcbglintegrations,platformthemes,platforminputcontexts,iconengines,styles} ./plugins
 glibc_needed
 delete_blacklisted
 mkdir -p ./usr/bin/

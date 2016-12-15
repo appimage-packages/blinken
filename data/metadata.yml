@@ -81,6 +81,7 @@ packages:
   - bzr
   - doxygen
   - libsphinxbase-dev
+  - libboost-all-dev
   #app specifc
   - libgamin-dev
   - media-player-info
