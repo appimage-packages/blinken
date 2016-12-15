@@ -162,5 +162,5 @@ dependencies:
         buildoptions: ''
       depname: gpgme
       source:
-        type: xz
+        type: git
         url: 'git://git.gnupg.org/gpgme.git'
