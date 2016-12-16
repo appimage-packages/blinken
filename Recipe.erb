@@ -80,7 +80,7 @@ rm -rf ./usr/libtool-* || true
 find . -name '*.a' -exec rm {} \;
 mkdir ./lib
 mkdir ./plugins
-cp -rv /opt/usr/share/* ./share/
+cp -rv /opt/usr/share/* ./usr/share/
 #rm -rfv ./share/cmake-3.7/
 mv /opt/usr/plugins/kf5/* ./plugins/ || true
 cp /usr/lib/x86_64-linux-gnu/pulseaudio/*.so ./lib/
