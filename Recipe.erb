@@ -46,12 +46,12 @@ cat > AppRun << EOF
 #!/bin/sh
 HERE="$(dirname "$(readlink -f "${0}")")"
 export LD_PRELOAD="\${HERE}/exec_wrapper.so"
-export QML2_IMPORT_PATH="\${HERE}/qml:\$QML2_IMPORT_PATH"
+export QML2_IMPORT_PATH="\${HERE}/qml"
 export QT_PLUGIN_PATH="\${HERE}/plugins"
-export LD_LIBRARY_PATH="\$HERE/lib:\$HERE/usr/lib:\$HERE/usr/lib/x86_64-linux-gnu:\$LD_LIBRARY_PATH"
-export XDG_DATA_DIRS="\${HERE/share/:\${HERE}/usr/share/:\$XDG_DATA_DIRS"
-export XDG_CONFIG_DIRS="\${HERE}/etc:\$XDG_CONFIG_DIRS"
-export PATH="${HERE}/usr/bin:${HERE}/bin:\$PATH"
+export LD_LIBRARY_PATH="\$HERE/lib:\$HERE/usr/lib"
+export XDG_DATA_DIRS="\${HERE/share/:\${HERE}/usr/share"
+export XDG_CONFIG_DIRS="\${HERE}/etc:"
+export PATH="\${HERE}/usr/bin:\${HERE}/bin"
 export KDE_FORK_SLAVES=1
 <%= name %> \$@
 EOF
