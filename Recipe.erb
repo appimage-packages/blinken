@@ -17,7 +17,7 @@
 #
 # You should have received a copy of the GNU Lesser General Public
 # License along with this library.  If not, see <http://www.gnu.org/licenses/>.
-
+export LD_LIBRARY_PATH=/usr/lib64/:/usr/lib:/app/usr/lib:/opt/usr/lib/:$LD_LIBRARY_PATH
 cd /
 
 # Get helper functions
@@ -56,7 +56,7 @@ export APPIMAGE_ORIGINAL_QT_PLUGIN_PATH=\$QT_PLUGIN_PATH
 export APPIMAGE_ORIGINAL_XDG_DATA_DIRS=\$XDG_DATA_DIRS
 export APPIMAGE_ORIGINAL_PATH=\$PATH
 export QML2_IMPORT_PATH=\$DIR/qml
-export QT_PLUGIN_PATH=\$DIR/plugins
+export QT_PLUGIN_PATH=\$DIR/usr/lib/qt5/plugins
 export LD_LIBRARY_PATH=\$QT_PLUGIN_PATH:\$DIR/lib:\$DIR/usr/lib
 export XDG_DATA_DIRS=\$DIR/share/:\$DIR/usr/share
 export XDG_CONFIG_DIRS=\$DIR/etc
@@ -71,11 +71,11 @@ export APPIMAGE_STARTUP_PATH=\$PATH
 EOF
 chmod +x AppRun
 
-#Move everything except libs into AppDir
-mkdir ./usr; mv /app/usr/{etc,share,lib,bin} $_ || true
+#Move everything into AppDir
+mv /app/* .
 mv usr/bin/<%= name %> .
 mv usr/share/applications/*<%= name %>*.desktop <%= name %>.desktop
-cp usr/share/icons/hicolor/scalable/apps/*<%= name %>* .
+cp usr/share/icons/hicolor/48x48/apps/*<%= name %>* .
 
 #Cleanup
 # We don't bundle the developer stuff
@@ -92,14 +92,14 @@ rm -rf ./usr/autoconf-* || true
 rm -rf ./usr/automake-* || true
 rm -rf ./usr/libtool-* || true
 find . -name '*.a' -exec rm {} \;
-mkdir ./lib
-mkdir ./plugins
-cp -rv /opt/usr/share/* ./usr/share/
-#rm -rfv ./share/cmake-3.7/
-mv /opt/usr/plugins/kf5/* ./plugins/ || true
+#All the plugins do not seem to be getting in. Manual copy.
+mkdir -p ./usr/lib/qt5/plugins; cp -rfv /opt/usr/plugins/{platformthemes,platforminputcontexts,iconengines,styles} $_
+mkdir -p ./usr/lib/qml/
+rsync -aruxv --progress ./usr/lib/plugins/ ./usr/lib/qt5/plugins/
+rm -rf ./usr/lib/plugins/
 cp /usr/lib/x86_64-linux-gnu/pulseaudio/*.so ./lib/
-#cp -rv /opt/usr/lib/x86_64-linux-gnu/plugins/* ./plugins/
-#update-mime-database ./usr/share/mime/
+
+update-mime-database ./usr/share/mime/
 # Prevent Qt from loading plugins from the system
 unset QTPATH
 QTPATH=$(find ./plugins -type d)
@@ -109,31 +109,23 @@ cat > ./usr/bin/qt.conf <<EOF
 Prefix = $QTPATH
 EOF
 fi
-strip -g $(find ./ -type b) || true
-find ./ -type f -executable -exec sed -i -e 's|/usr|././|g' '{}' ';'
-../linuxdeployqt-1-x86_64.AppImage <%= name %> -verbose=3 -bundle-non-qt-libs -qmldir=/opt/usr/qml -libpath=/opt/usr/lib/libQt5XcbQpa.so
+strip -g $(find usr) || true
 
-#All the plugins do not seem to be getting in. Manual copy.
-cp -rfv /opt/usr/plugins/{platformthemes,platforminputcontexts,iconengines,styles} ./plugins/
-# It also seems libQt5XcbQpa is missing
-#cp /opt/usr/lib/libQt5XcbQpa* ./lib/
+mv usr/lib/libexec/kf5/* /app/usr/bin/ || true
+../linuxdeployqt-1-x86_64.AppImage <%= name %> -verbose=3 -bundle-non-qt-libs -qmldir=/opt/usr/qml -libpath=/opt/usr/lib/libQt5XcbQpa.so
+patch_usr
 glibc_needed
 delete_blacklisted
 move_lib
-mkdir -p ./usr/bin/
 get_desktopintegration <%= name %>
 
 cd /
-#wget "https://github.com/probonopd/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
-#chmod a+x appimagetool-x86_64.AppImage
-
-wget -c "https://github.com/probonopd/AppImageKit/releases/download/6/AppImageAssistant_6-x86_64.AppImage" -O  AppImageAssistant # (64-bit)
-chmod a+x ./AppImageAssistant
+wget "https://github.com/probonopd/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
+chmod a+x appimagetool-x86_64.AppImage
 
 ARCH=$(arch)
 DATE=$(date +"%m%d%Y")
 
 APPIMAGEFILENAME="<%= name %>-git$DATE-$ARCH.AppImage"
 
-#./appimagetool-x86_64.AppImage /<%= name %>.AppDir /appimage/$APPIMAGEFILENAME
-./AppImageAssistant /<%= name %>.AppDir /appimage/$APPIMAGEFILENAME
+./appimagetool-x86_64.AppImage /<%= name %>.AppDir /appimage/$APPIMAGEFILENAME
