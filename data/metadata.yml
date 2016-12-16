@@ -143,7 +143,7 @@ dependencies:
   - qjson:
       build:
         buildsystem: cmake
-        buildoptions: '-DCMAKE_INSTALL_PREFIX:PATH=/opt/usr'
+        buildoptions: '-DCMAKE_INSTALL_PREFIX:PATH=/app/usr'
       depname: qjson
       source:
         type: git
@@ -151,7 +151,7 @@ dependencies:
   - libdbusmenu-qt:
       build:
         buildsystem: cmake
-        buildoptions: '-DCMAKE_INSTALL_PREFIX:PATH=/opt/usr'
+        buildoptions: '-DCMAKE_INSTALL_PREFIX:PATH=/app/usr'
       depname: libdbusmenu-qt
       source:
         type: bzr
