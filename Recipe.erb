@@ -101,14 +101,14 @@ cp /usr/lib/x86_64-linux-gnu/pulseaudio/*.so ./usr/lib/
 
 update-mime-database ./usr/share/mime/
 # Prevent Qt from loading plugins from the system
-unset QTPATH
-QTPATH=$(find ./plugins -type d)
-if [ ! -z $QTPATH ] ; then
-cat > ./usr/bin/qt.conf <<EOF
-[Paths]
-Prefix = $QTPATH
-EOF
-fi
+# unset QTPATH
+# QTPATH=$(find ./plugins -type d)
+# if [ ! -z $QTPATH ] ; then
+# cat > ./usr/bin/qt.conf <<EOF
+# [Paths]
+# Prefix = $QTPATH
+# EOF
+# fi
 strip -g $(find usr) || true
 
 mv usr/lib/libexec/kf5/* /app/usr/bin/ || true
