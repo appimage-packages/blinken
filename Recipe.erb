@@ -97,7 +97,7 @@ EOF
 fi
 strip -g $(find ./ -type b) || true
 find ./ -type f -executable -exec sed -i -e 's|/usr|././|g' '{}' ';'
-../linuxdeployqt-1-x86_64.AppImage <%= name %> -verbose=3 -bundle-non-qt-libs -qmldir=/opt/usr/qml
+../linuxdeployqt-1-x86_64.AppImage <%= name %> -verbose=3 -bundle-non-qt-libs -qmldir=/opt/usr/qml -libppath=/opt/usr/lib/libQt5XcbQpa.so
 
 #All the plugins do not seem to be getting in. Manual copy.
 cp -rfv /opt/usr/plugins/{xcbglintegrations,platformthemes,platforminputcontexts,iconengines,styles} ./plugins/
