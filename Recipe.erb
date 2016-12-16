@@ -100,7 +100,7 @@ find ./ -type f -executable -exec sed -i -e 's|/usr|././|g' '{}' ';'
 ../linuxdeployqt-1-x86_64.AppImage <%= name %> -verbose=3 -bundle-non-qt-libs -qmldir=/opt/usr/qml -libpath=/opt/usr/lib/libQt5XcbQpa.so
 
 #All the plugins do not seem to be getting in. Manual copy.
-cp -rfv /opt/usr/plugins/{xcbglintegrations,platformthemes,platforminputcontexts,iconengines,styles} ./plugins/
+cp -rfv /opt/usr/plugins/{platformthemes,platforminputcontexts,iconengines,styles} ./plugins/
 # It also seems libQt5XcbQpa is missing
 #cp /opt/usr/lib/libQt5XcbQpa* ./lib/
 glibc_needed
