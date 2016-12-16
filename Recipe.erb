@@ -44,15 +44,30 @@ cd /<%= name %>.AppDir
 #Create AppRun
 cat > AppRun << EOF
 #!/bin/sh
-HERE="$(dirname "$(readlink -f "${0}")")"
-export LD_PRELOAD="\${HERE}/exec_wrapper.so"
-export QML2_IMPORT_PATH="\${HERE}/qml"
-export QT_PLUGIN_PATH="\${HERE}/plugins"
-export LD_LIBRARY_PATH="\${HERE}/lib:\${HERE}/usr/lib"
-export XDG_DATA_DIRS="\${HERE/share/:\${HERE}/usr/share"
-export XDG_CONFIG_DIRS="\${HERE}/etc:"
-export PATH="\${HERE}/bin:\${HERE}/usr/bin"
+DIR="\`dirname \"\$0\"\`"
+DIR="\`( cd \"\$DIR\" && pwd )\`"
+export APPDIR=\$DIR
+
+export LD_PRELOAD=\$DIR/exec_wrapper.so
+
+export APPIMAGE_ORIGINAL_QML2_IMPORT_PATH=\$QML2_IMPORT_PATH
+export APPIMAGE_ORIGINAL_LD_LIBRARY_PATH=\$LD_LIBRARY_PATH
+export APPIMAGE_ORIGINAL_QT_PLUGIN_PATH=\$QT_PLUGIN_PATH
+export APPIMAGE_ORIGINAL_XDG_DATA_DIRS=\$XDG_DATA_DIRS
+export APPIMAGE_ORIGINAL_PATH=\$PATH
+export LD_PRELOAD=\$DIR/exec_wrapper.so
+export QML2_IMPORT_PATH=\$DIR/qml
+export QT_PLUGIN_PATH=\$DIR/plugins
+export LD_LIBRARY_PATH=\$DIR/lib:\$DIR/usr/lib
+export XDG_DATA_DIRS=\$DIR/share/:\$DIR/usr/share
+export XDG_CONFIG_DIRS=\$DIR/etc
+export PATH=\$DIR/bin:\$DIR/usr/bin
 export KDE_FORK_SLAVES=1
+export APPIMAGE_STARTUP_QML2_IMPORT_PATH=\$QML2_IMPORT_PATH
+export APPIMAGE_STARTUP_LD_LIBRARY_PATH=\$LD_LIBRARY_PATH
+export APPIMAGE_STARTUP_QT_PLUGIN_PATH=\$QT_PLUGIN_PATH
+export APPIMAGE_STARTUP_XDG_DATA_DIRS=\$XDG_DATA_DIRS
+export APPIMAGE_STARTUP_PATH=\$PATH
 <%= name %> \$@
 EOF
 chmod +x AppRun
