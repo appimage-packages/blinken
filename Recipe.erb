@@ -58,7 +58,7 @@ EOF
 chmod +x AppRun
 
 #Move everything except libs into AppDir
-mv /app/usr/{etc,share,lib,bin} . || true
+mkdir ./usr; mv /app/usr/{etc,share,lib,bin} $_ || true
 mv bin/<%= name %> .
 mv share/applications/*<%= name %>*.desktop <%= name %>.desktop
 cp share/icons/hicolor/scalable/apps/*<%= name %>* .
