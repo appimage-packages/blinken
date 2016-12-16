@@ -48,10 +48,10 @@ HERE="$(dirname "$(readlink -f "${0}")")"
 export LD_PRELOAD="\${HERE}/exec_wrapper.so"
 export QML2_IMPORT_PATH="\${HERE}/qml"
 export QT_PLUGIN_PATH="\${HERE}/plugins"
-export LD_LIBRARY_PATH="\$HERE/lib:\$HERE/usr/lib"
+export LD_LIBRARY_PATH="\${HERE}/lib:\${HERE}/usr/lib"
 export XDG_DATA_DIRS="\${HERE/share/:\${HERE}/usr/share"
 export XDG_CONFIG_DIRS="\${HERE}/etc:"
-export PATH="\${HERE}/usr/bin:\${HERE}/bin"
+export PATH="\${HERE}/bin:\${HERE}/usr/bin"
 export KDE_FORK_SLAVES=1
 <%= name %> \$@
 EOF
@@ -105,16 +105,21 @@ cp -rfv /opt/usr/plugins/{platformthemes,platforminputcontexts,iconengines,style
 #cp /opt/usr/lib/libQt5XcbQpa* ./lib/
 glibc_needed
 delete_blacklisted
+move_lib
 mkdir -p ./usr/bin/
 get_desktopintegration <%= name %>
 
 cd /
-wget "https://github.com/probonopd/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
-chmod a+x appimagetool-x86_64.AppImage
+#wget "https://github.com/probonopd/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
+#chmod a+x appimagetool-x86_64.AppImage
+
+wget -c "https://github.com/probonopd/AppImageKit/releases/download/6/AppImageAssistant_6-x86_64.AppImage" -O  AppImageAssistant # (64-bit)
+chmod a+x ./AppImageAssistant
 
 ARCH=$(arch)
 DATE=$(date +"%m%d%Y")
 
 APPIMAGEFILENAME="<%= name %>-git$DATE-$ARCH.AppImage"
 
-./appimagetool-x86_64.AppImage /<%= name %>.AppDir /appimage/$APPIMAGEFILENAME
+#./appimagetool-x86_64.AppImage /<%= name %>.AppDir /appimage/$APPIMAGEFILENAME
+./AppImageAssistant /<%= name %>.AppDir /appimage/$APPIMAGEFILENAME
