@@ -97,7 +97,7 @@ mkdir -p ./usr/lib/qt5/plugins; cp -rfv /opt/usr/plugins/{platformthemes,platfor
 mkdir -p ./usr/lib/qml/
 rsync -aruxv --progress ./usr/lib/x86_64-linux-gnu/plugins/kf5/ ./usr/lib/qt5/plugins/
 rm -rf ./usr/lib/x86_64-linux-gnu/plugins/kf5
-cp /usr/lib/x86_64-linux-gnu/pulseaudio/*.so ./lib/
+cp /usr/lib/x86_64-linux-gnu/pulseaudio/*.so ./usr/lib/
 
 update-mime-database ./usr/share/mime/
 # Prevent Qt from loading plugins from the system
