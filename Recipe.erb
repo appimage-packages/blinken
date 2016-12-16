@@ -102,7 +102,7 @@ find ./ -type f -executable -exec sed -i -e 's|/usr|././|g' '{}' ';'
 #All the plugins do not seem to be getting in. Manual copy.
 cp -rfv /opt/usr/plugins/{xcbglintegrations,platformthemes,platforminputcontexts,iconengines,styles} ./plugins/
 # It also seems libQt5XcbQpa is missing
-cp /opt/usr/lib/libQt5XcbQpa* ./usr/lib/
+#cp /opt/usr/lib/libQt5XcbQpa* ./lib/
 glibc_needed
 delete_blacklisted
 mkdir -p ./usr/bin/
