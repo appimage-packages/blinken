@@ -96,7 +96,7 @@ find . -name '*.a' -exec rm {} \;
 mkdir -p ./usr/lib/qt5/plugins; cp -rfv /opt/usr/plugins/{platformthemes,platforminputcontexts,iconengines,styles} $_
 mkdir -p ./usr/lib/qml/
 rsync -aruxv --progress ./usr/lib/x86_64-linux-gnu/plugins/kf5/ ./usr/lib/qt5/plugins/
-rm -rf ./usr/lib/plugins/
+rm -rf ./usr/lib/x86_64-linux-gnu/plugins/kf5
 cp /usr/lib/x86_64-linux-gnu/pulseaudio/*.so ./lib/
 
 update-mime-database ./usr/share/mime/
