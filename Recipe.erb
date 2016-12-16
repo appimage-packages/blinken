@@ -60,8 +60,8 @@ chmod +x AppRun
 #Move everything except libs into AppDir
 mkdir ./usr; mv /app/usr/{etc,share,lib,bin} $_ || true
 mv usr/bin/<%= name %> .
-mv share/applications/*<%= name %>*.desktop <%= name %>.desktop
-cp share/icons/hicolor/scalable/apps/*<%= name %>* .
+mv usr/share/applications/*<%= name %>*.desktop <%= name %>.desktop
+cp usr/share/icons/hicolor/scalable/apps/*<%= name %>* .
 
 #Cleanup
 # We don't bundle the developer stuff
