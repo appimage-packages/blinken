@@ -95,7 +95,7 @@ find . -name '*.a' -exec rm {} \;
 #All the plugins do not seem to be getting in. Manual copy.
 mkdir -p ./usr/lib/qt5/plugins; cp -rfv /opt/usr/plugins/{platformthemes,platforminputcontexts,iconengines,styles} $_
 mkdir -p ./usr/lib/qml/
-rsync -aruxv --progress ./opt/usr/lib/x86_64-linux-gnu/plugins/kf5/ ./usr/lib/qt5/plugins/
+rsync -aruxv --progress /opt/usr/lib/x86_64-linux-gnu/plugins/kf5/ ./usr/lib/qt5/plugins/
 cp /usr/lib/x86_64-linux-gnu/pulseaudio/*.so ./usr/lib/
 
 update-mime-database ./usr/share/mime/
