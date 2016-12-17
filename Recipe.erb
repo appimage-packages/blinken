@@ -83,7 +83,7 @@ mkdir -p ./usr/lib/qt5/plugins; cp -rfv /opt/usr/plugins/{platformthemes,platfor
 mkdir -p ./usr/lib/qml/
 rsync -aruxv --progress /opt/usr/plugins/kf5/ ./usr/lib/qt5/plugins/
 rsync -aruxv --progress /opt/usr/share/ ./usr/share/
-cp /usr/lib/x86_64-linux-gnu/pulseaudio/*.so ./usr/lib/
+cp /usr/lib/x86_64-linux-gnu/pulseaudio/*.so ./opt/usr/lib/
 #Cleanup
 # We don't bundle the developer stuff
 rm -rf ./usr/include || true
