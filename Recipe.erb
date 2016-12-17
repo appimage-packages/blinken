@@ -112,7 +112,8 @@ update-mime-database ./usr/share/mime/
 strip -g $(find usr) || true
 
 mv usr/lib/libexec/kf5/* /app/usr/bin/ || true
-export LD_LIBRARY_PATH=/usr/lib64/:/usr/lib:./usr/lib:./usr/lib/x86_64-linux-gnu:/opt/usr/lib/:$LD_LIBRARY_PATH
+unset LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=./usr/lib/x86_64-linux-gnu:/opt/usr/lib:./usr/lib
 ../linuxdeployqt-1-x86_64.AppImage <%= name %> -verbose=3 -bundle-non-qt-libs -qmldir=/opt/usr/qml -libpath=/opt/usr/lib/libQt5XcbQpa.so
 patch_usr
 glibc_needed
