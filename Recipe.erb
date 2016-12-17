@@ -95,8 +95,7 @@ find . -name '*.a' -exec rm {} \;
 #All the plugins do not seem to be getting in. Manual copy.
 mkdir -p ./usr/lib/qt5/plugins; cp -rfv /opt/usr/plugins/{platformthemes,platforminputcontexts,iconengines,styles} $_
 mkdir -p ./usr/lib/qml/
-rsync -aruxv --progress ./usr/lib/x86_64-linux-gnu/plugins/kf5/ ./usr/lib/qt5/plugins/
-rm -rf ./usr/lib/x86_64-linux-gnu/plugins/kf5
+rsync -aruxv --progress ./opt/usr/lib/x86_64-linux-gnu/plugins/kf5/ ./usr/lib/qt5/plugins/
 cp /usr/lib/x86_64-linux-gnu/pulseaudio/*.so ./usr/lib/
 
 update-mime-database ./usr/share/mime/
@@ -112,8 +111,6 @@ update-mime-database ./usr/share/mime/
 strip -g $(find usr) || true
 
 mv usr/lib/libexec/kf5/* /app/usr/bin/ || true
-unset LD_LIBRARY_PATH
-export LD_LIBRARY_PATH=./usr/lib/x86_64-linux-gnu:/opt/usr/lib:./usr/lib
 ../linuxdeployqt-1-x86_64.AppImage <%= name %> -verbose=3 -bundle-non-qt-libs -qmldir=/opt/usr/qml -libpath=/opt/usr/lib/libQt5XcbQpa.so
 patch_usr
 glibc_needed
