@@ -77,6 +77,13 @@ mv usr/bin/<%= name %> .
 mv usr/share/applications/*<%= name %>*.desktop <%= name %>.desktop
 cp usr/share/icons/hicolor/48x48/apps/*<%= name %>* .
 
+
+#All the plugins do not seem to be getting in. Manual copy.
+mkdir -p ./usr/lib/qt5/plugins; cp -rfv /opt/usr/plugins/{platformthemes,platforminputcontexts,iconengines,styles} $_
+mkdir -p ./usr/lib/qml/
+rsync -aruxv --progress /opt/usr/plugins/kf5/ ./usr/lib/qt5/plugins/
+rsync -aruxv --progress /opt/usr/share/ ./usr/
+cp /usr/lib/x86_64-linux-gnu/pulseaudio/*.so ./usr/lib/
 #Cleanup
 # We don't bundle the developer stuff
 rm -rf ./usr/include || true
@@ -92,12 +99,6 @@ rm -rf ./usr/autoconf-* || true
 rm -rf ./usr/automake-* || true
 rm -rf ./usr/libtool-* || true
 find . -name '*.a' -exec rm {} \;
-#All the plugins do not seem to be getting in. Manual copy.
-mkdir -p ./usr/lib/qt5/plugins; cp -rfv /opt/usr/plugins/{platformthemes,platforminputcontexts,iconengines,styles} $_
-mkdir -p ./usr/lib/qml/
-rsync -aruxv --progress /opt/usr/plugins/kf5/ ./usr/lib/qt5/plugins/
-cp /usr/lib/x86_64-linux-gnu/pulseaudio/*.so ./usr/lib/
-
 update-mime-database ./usr/share/mime/
 # Prevent Qt from loading plugins from the system
 # unset QTPATH
