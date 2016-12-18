@@ -83,16 +83,16 @@ cp usr/share/icons/hicolor/48x48/apps/*<%= name %>* .
 mkdir -p ./usr/lib/qml/
 rsync -aruxv --progress /opt/usr/plugins/kf5/ ./plugins/
 rsync -aruxv --progress /opt/usr/share/ ./usr/share/
-cp /usr/lib/x86_64-linux-gnu/pulseaudio/*.so* ./usr/lib/
-cp /usr/lib/x86_64-linux-gnu/libxshmfence* ./usr/lib/
-cp /usr/lib/x86_64-linux-gnu/libX*  ./usr/lib/
-cp /usr/lib/x86_64-linux-gnu/libxcb* ./usr/lib/
-cp /usr/lib/x86_64-linux-gnu/libdrm* ./usr/lib/
-cp /usr/lib/x86_64-linux-gnu/libSM* ./usr/lib/
-cp  /usr/lib/x86_64-linux-gnu/libICE* ./usr/lib/
-cp /usr/lib/x86_64-linux-gnu/libxkb* ./usr/lib/
-cp /usr/lib/x86_64-linux-gnu/libfontconfig* ./usr/lib/
-cp /usr/lib/x86_64-linux-gnu/libfreetype* ./usr/lib/
+# cp /usr/lib/x86_64-linux-gnu/pulseaudio/*.so* ./usr/lib/
+# cp /usr/lib/x86_64-linux-gnu/libxshmfence* ./usr/lib/
+# cp /usr/lib/x86_64-linux-gnu/libX*  ./usr/lib/
+# cp /usr/lib/x86_64-linux-gnu/libxcb* ./usr/lib/
+# cp /usr/lib/x86_64-linux-gnu/libdrm* ./usr/lib/
+# cp /usr/lib/x86_64-linux-gnu/libSM* ./usr/lib/
+# cp  /usr/lib/x86_64-linux-gnu/libICE* ./usr/lib/
+# cp /usr/lib/x86_64-linux-gnu/libxkb* ./usr/lib/
+# cp /usr/lib/x86_64-linux-gnu/libfontconfig* ./usr/lib/
+# cp /usr/lib/x86_64-linux-gnu/libfreetype* ./usr/lib/
 #Cleanup
 # We don't bundle the developer stuff
 rm -rf ./usr/include || true
