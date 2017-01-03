@@ -130,7 +130,7 @@ frameworks:
 type: git
 url: http://anongit.kde.org/blinken
 buildsystem: cmake
-buildoptions: '-DCMAKE_INSTALL_PREFIX:PATH=/app/usr -DKDE_INSTALL_SYSCONFDIR=/app/etc -DBUILD_TESTING=OFF'
+buildoptions: '-DCMAKE_INSTALL_PREFIX:PATH=/opt/usr -DKDE_INSTALL_SYSCONFDIR=/opt/etc -DBUILD_TESTING=OFF'
 dependencies:
   - cpan:
       build:
@@ -156,14 +156,6 @@ dependencies:
       source:
         type: bzr
         url: 'lp:libdbusmenu-qt'
-  - qt-gstreamer:
-      build:
-        buildsystem: cmake
-        buildoptions: '-DQT_VERSION=5'
-      depname: qt-gstreamer-1.2.0
-      source:
-        type: xz
-        url: 'https://gstreamer.freedesktop.org/src/qt-gstreamer/qt-gstreamer-1.2.0.tar.xz'
   - gpgme:
       build:
         buildsystem: make
@@ -172,3 +164,27 @@ dependencies:
       source:
         type: git
         url: 'git://git.gnupg.org/gpgme.git'
+  - gst-plugins-bad:
+      build:
+        buildsystem: make
+        buildoptions: ''
+      depname: gst-plugins-bad-1.10.2
+      source:
+        type: xz
+        url: 'https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-1.10.2.tar.xz'
+  - gst-plugins-ugly:
+      build:
+        buildsystem: make
+        buildoptions: ''
+      depname: gst-plugins-ugly-1.10.2
+      source:
+        type: xz
+        url: 'https://gstreamer.freedesktop.org/src/gst-plugins-ugly/gst-plugins-ugly-1.10.2.tar.xz'
+  - gst-libav:
+      build:
+        buildsystem: make
+        buildoptions: ''
+      depname: gst-libav-1.10.2
+      source:
+        type: xz
+        url: 'https://gstreamer.freedesktop.org/src/gst-libav/gst-libav-1.10.2.tar.xz'
