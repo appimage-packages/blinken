@@ -123,6 +123,7 @@ frameworks:
     - kbookmarks
     - kjobwidgets
     - phonon
+    - phonon-gstreamer
     - knotifications
     - kwallet
     - kio
