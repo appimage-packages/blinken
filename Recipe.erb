@@ -61,6 +61,18 @@ cp /usr/lib/x86_64-linux-gnu/pulseaudio/*.so* ./lib/
 cp -rfv /usr/share/mime ./usr/share/
 cp /etc/mime.types ./etc/
 update-mime-database ./usr/share/mime
+
+strip -g $(find usr/bin) || true
+strip -g $(find usr/lib) || true
+
+mv /opt/usr/libexec/kf5/* ./usr/bin/ || true
+mv /opt/usr/libexec/gstreamer-1.0/* ./usr/bin || true
+cp -rfv /opt/usr/lib/x86_64-linux-gnu/* /opt/usr/lib/
+unset LD_LIBRARY_PATH
+../linuxdeployqt-1-x86_64.AppImage <%= name %> -verbose=3 -bundle-non-qt-libs -qmldir=/opt/usr/qml
+patch_usr
+glibc_needed
+delete_blacklisted
 #Cleanup
 # We don't bundle the developer stuff
 rm -rf ./usr/include || true
@@ -75,28 +87,13 @@ rm -rf ./usr/gettext-* || true
 rm -rf ./usr/autoconf-* || true
 rm -rf ./usr/automake-* || true
 rm -rf ./usr/libtool-* || true
+rm -rf ./libexec || true
+rm -rf ./usr/share/cmake-3.7 || true
+rm -rf ./usr/share/man || true
+rm -rf ./usr/share/doc/ECM || true
+rm -rf ./usr/share/doc/libdbusmenu-qt5-doc || true
+rm -rf ./usr/share/gtk-doc || true
 find . -name '*.a' -exec rm {} \;
-# Prevent Qt from loading plugins from the system
-# unset QTPATH
-# QTPATH=$(find ./plugins -type d)
-# if [ ! -z $QTPATH ] ; then
-# cat > qt.conf <<EOF
-# [Paths]
-# Prefix = $QTPATH
-# EOF
-# fi
-strip -g $(find usr/bin) || true
-strip -g $(find usr/lib) || true
-
-mv /opt/usr/libexec/kf5/* ./usr/bin/ || true
-mv /opt/usr/libexec/gstreamer-1.0/* ./usr/bin || true
-cp -rfv /opt/usr/lib/x86_64-linux-gnu/* /opt/usr/lib/
-unset LD_LIBRARY_PATH
-../linuxdeployqt-1-x86_64.AppImage <%= name %> -verbose=3 -bundle-non-qt-libs -qmldir=/opt/usr/qml
-patch_usr
-glibc_needed
-delete_blacklisted
-#move_lib
 get_desktopintegration <%= name %>
 cd /app/src
 git clone git://anongit.kde.org/scratch/brauch/appimage-exec-wrapper
@@ -109,34 +106,22 @@ cd /<%= name %>.AppDir
 rm AppRun
 #Create AppRun
 cat > AppRun << EOF
-#!/bin/bash
+#!/bin/sh
 DIR="\`dirname \"\$0\"\`"
-DIR="\`( cd \"\$DIR\" && pwd )\`"
-
-
-export LD_PRELOAD=\$DIR/exec_wrapper.so
-
-export APPIMAGE_ORIGINAL_QML2_IMPORT_PATH=\$QML2_IMPORT_PATH
-export APPIMAGE_ORIGINAL_LD_LIBRARY_PATH=\$LD_LIBRARY_PATH
-export APPIMAGE_ORIGINAL_QT_PLUGIN_PATH=\$QT_PLUGIN_PATH
-export APPIMAGE_ORIGINAL_XDG_DATA_DIRS=\$XDG_DATA_DIRS
-export APPIMAGE_ORIGINAL_PATH=\$PATH
-export QML2_IMPORT_PATH=\$DIR/qml
-export QT_PLUGIN_PATH=\$DIR/plugins
-export LD_LIBRARY_PATH=\$QT_PLUGIN_PATH:\$DIR/lib:\$DIR/usr/lib:$LD_LIBRARY_PATH
-export XDG_DATA_DIRS=\$DIR/usr/share:$HOME/.local/share:/usr/local/share/:/usr/share:$XDG_DATA_DIRS
-export XDG_DATA_HOME=\$HOME/.local/share
-export XDG_CONFIG_DIRS=\$DIR/etc/xdg:$XDG_CONFIG_DIRS
-export PATH=\$DIR/usr/bin:\$DIR/bin:$PATH
+HERE="\`( cd \"\$DIR\" && pwd )\`"
+export LD_PRELOAD=\$HERE/exec_wrapper.so
+export QML2_IMPORT_PATH=\$HERE/qml
+export QT_PLUGIN_PATH=\$HERE/plugins
+export PATH=\$HERE/usr/bin/:\$HERE/usr/sbin/:\$HERE/usr/games/:\$HERE/bin/:\$HERE/sbin/:$PATH
+export LD_LIBRARY_PATH=\$HERE/usr/lib/:\$HERE/usr/lib/x86_64-linux-gnu/:\$HERE/usr/lib64/:\$HERE/lib/:\$HERE/lib/x86_64-linux-gnu/:\$HERE/lib64/:$LD_LIBRARY_PATH
+export XDG_DATA_DIRS=\$HERE/usr/share:$HOME/.local/share:/usr/local/share/:/usr/share:$XDG_DATA_DIRS
+export XDG_DATA_HOME=$HOME/.local/share
+export XDG_CONFIG_DIRS=\$HERE/etc/xdg:$XDG_CONFIG_DIRS
 export KDE_FORK_SLAVES=1
-export GST_PLUGIN_PATH=\$DIR/lib
-export GST_PLUGIN_SCANNER=\$DIR/bin
-export APPIMAGE_STARTUP_QML2_IMPORT_PATH=\$QML2_IMPORT_PATH
-export APPIMAGE_STARTUP_LD_LIBRARY_PATH=\$LD_LIBRARY_PATH
-export APPIMAGE_STARTUP_QT_PLUGIN_PATH=\$QT_PLUGIN_PATH
-export APPIMAGE_STARTUP_XDG_DATA_DIRS=\$XDG_DATA_DIRS
-export APPIMAGE_STARTUP_PATH=\$PATH
-<%= name %>  $@
+export GST_PLUGIN_PATH=\$HERE/lib
+export GST_PLUGIN_SCANNER=\$HERE/bin
+
+<%= name %> $@
 EOF
 chmod +x AppRun
 mv <%= name %> ./usr/bin/
@@ -148,19 +133,6 @@ chmod a+x appimagetool-x86_64.AppImage
 ARCH=$(arch)
 DATE=$(date +"%m%d%Y")
 
-APPIMAGEFILENAME="<%= name %>-no-data-git$DATE-$ARCH.AppImage"
-
-./appimagetool-x86_64.AppImage /<%= name %>.AppDir /appimage/$APPIMAGEFILENAME
-# Artikulate has a data repo..
-#git clone https://github.com/KDE/artikulate-data ./usr/share/artikulate
-
-cd /
-wget "https://github.com/probonopd/AppImageKit/releases/download/knowngood/appimagetool-x86_64.AppImage"
-chmod a+x appimagetool-x86_64.AppImage
-
-ARCH=$(arch)
-DATE=$(date +"%m%d%Y")
-
-APPIMAGEFILENAME="<%= name %>-with-data-git$DATE-$ARCH.AppImage"
+APPIMAGEFILENAME="<%= name %>-git$DATE-$ARCH.AppImage"
 
 ./appimagetool-x86_64.AppImage /<%= name %>.AppDir /appimage/$APPIMAGEFILENAME
