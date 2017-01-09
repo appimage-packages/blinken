@@ -165,27 +165,27 @@ dependencies:
       source:
         type: git
         url: 'git://git.gnupg.org/gpgme.git'
-  - gst-plugins-bad:
-      build:
-        buildsystem: make
-        buildoptions: ''
-      depname: gst-plugins-bad-1.10.2
-      source:
-        type: xz
-        url: 'https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-1.10.2.tar.xz'
-  - gst-plugins-ugly:
-      build:
-        buildsystem: make
-        buildoptions: ''
-      depname: gst-plugins-ugly-1.10.2
-      source:
-        type: xz
-        url: 'https://gstreamer.freedesktop.org/src/gst-plugins-ugly/gst-plugins-ugly-1.10.2.tar.xz'
-  - gst-libav:
-      build:
-        buildsystem: make
-        buildoptions: ''
-      depname: gst-libav-1.10.2
-      source:
-        type: xz
-        url: 'https://gstreamer.freedesktop.org/src/gst-libav/gst-libav-1.10.2.tar.xz'
+  # - gst-plugins-bad:
+  #     build:
+  #       buildsystem: make
+  #       buildoptions: ''
+  #     depname: gst-plugins-bad-1.10.2
+  #     source:
+  #       type: xz
+  #       url: 'https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-1.10.2.tar.xz'
+  # - gst-plugins-ugly:
+  #     build:
+  #       buildsystem: make
+  #       buildoptions: ''
+  #     depname: gst-plugins-ugly-1.10.2
+  #     source:
+  #       type: xz
+  #       url: 'https://gstreamer.freedesktop.org/src/gst-plugins-ugly/gst-plugins-ugly-1.10.2.tar.xz'
+  # - gst-libav:
+  #     build:
+  #       buildsystem: make
+  #       buildoptions: ''
+  #     depname: gst-libav-1.10.2
+  #     source:
+  #       type: xz
+  #       url: 'https://gstreamer.freedesktop.org/src/gst-libav/gst-libav-1.10.2.tar.xz'
