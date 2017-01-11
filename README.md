@@ -1,6 +1,6 @@
 # blinken
 
-[![Build Status](http://aci.pangea.pub/job/mpipeline-blinken-appimage/job/master/badge/icon)](http://aci.pangea.pub/job/mpipeline-blinken-appimage/job/master/)
+[![Build Status](http://aci.pangea.pub/job/blinken-appimage/job/master/badge/icon)](http://aci.pangea.pub/job/blinken-appimage/job/master/)
 
 KDE Blinken appimage
 
