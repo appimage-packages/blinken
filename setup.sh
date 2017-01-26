@@ -21,4 +21,4 @@ export PATH=/opt/usr/bin:/home/jenkins/.rbenv/bin:/home/jenkins/.rbenv/shims:$PA
 export WORKSPACE=`pwd`
 echo $WORKSPACE
 
-bundle install && bundle exec rspec /in/appimage-template/spec/recipe_rspec.rb --fail-fast
+cd /in/ && bundle install && rspec appimage-template/spec/recipe_rspec.rb --fail-fast
