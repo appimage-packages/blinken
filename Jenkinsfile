@@ -37,10 +37,6 @@ node('linux') {
             checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, \
             extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'blinken']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://anongit.kde.org/blinken']]])
        }
-        stage( 'Setup' ) {
-            sh 'bundle install'
-            def WORKSPACE=pwd()
-        }
         stage( 'Build' ) {
             sh 'bundle exec deploy.rb'
        }

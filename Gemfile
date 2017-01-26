@@ -5,4 +5,4 @@ gem 'logger'
 gem 'logger-colors'
 gem 'fileutils'
 gem 'rspec'
-gem 'rugged', git: 'https://github.com/libgit2/rugged.git', submodules: true
+#gem 'rugged', git: 'https://github.com/libgit2/rugged.git', submodules: true
