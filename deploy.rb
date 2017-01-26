@@ -22,7 +22,7 @@
 
 require_relative 'appimage-template/libs/builddocker.rb'
 require 'fileutils'
-require 'pty'
+
 
 if RUBY_VERSION =~ /1.9/ # assuming you're running Ruby ~1.9
   Encoding.default_external = Encoding::UTF_8
