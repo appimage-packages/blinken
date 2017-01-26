@@ -17,8 +17,9 @@
 #
 # You should have received a copy of the GNU Lesser General Public
 # License along with this library.  If not, see <http://www.gnu.org/licenses/>.
-export PATH=/opt/usr/bin:/home/jenkins/.rbenv/bin:/home/jenkins/.rbenv/shims:$PATH
+export PATH=/opt/usr/bin:/root/.rbenv/bin:/root/.rbenv/shims:$PATH
 export WORKSPACE=`pwd`
 echo $WORKSPACE
 gem install rspec
+
 cd /in/ && bundle install && rspec appimage-template/spec/recipe_rspec.rb --fail-fast
