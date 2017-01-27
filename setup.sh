@@ -22,5 +22,5 @@ export WORKSPACE=`pwd`
 echo $WORKSPACE
 rbenv global 2.3.1
 gem install rspec
-cd /in/ && bundle install --binstubs && rspec appimage-template/spec/recipe_rspec.rb --fail-fast
+cd /in/ && rspec appimage-template/spec/recipe_rspec.rb --fail-fast
 bundle show rspec
