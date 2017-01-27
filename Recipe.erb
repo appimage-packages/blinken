@@ -137,4 +137,4 @@ DATE=$(date +"%Y%m%d")
 
 APPIMAGEFILENAME="<%= name %>-git$DATE-$ARCH.AppImage"
 
-./appimagetool-x86_64.AppImage -v -u "zsync|$APPIMAGEFILENAME.zsync" /<%= name %>.AppDir /appimage/$APPIMAGEFILENAME
+./appimagetool-x86_64.AppImage -v -u zsync|https://s3-eu-central-1.amazonaws.com/ds9-apps/$APPIMAGEFILENAME.zsync /<%= name %>.AppDir /appimage/$APPIMAGEFILENAME
