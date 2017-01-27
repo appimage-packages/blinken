@@ -20,7 +20,5 @@
 export PATH=/opt/usr/bin:/home/jenkins/.rbenv/bin:/home/jenkins/.rbenv/shims:$PATH
 export WORKSPACE=`pwd`
 echo $WORKSPACE
-rbenv global 2.3.1
-gem install rspec
+
 cd /in/ && rspec appimage-template/spec/recipe_rspec.rb --fail-fast
-bundle show rspec
