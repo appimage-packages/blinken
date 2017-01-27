@@ -138,5 +138,5 @@ DATE=$(date +"%Y%m%d")
 APPIMAGEFILENAME="<%= name %>-git$DATE-$ARCH.AppImage"
 
 ./appimagetool-x86_64.AppImage -v -u "zsync|$APPIMAGEFILENAME" /<%= name %>.AppDir /appimage/$APPIMAGEFILENAME
-zsyncmake - o /appimage/$APPIMAGEFILENAME.zsync /appimage/$APPIMAGEFILENAME
+zsyncmake -o /appimage/$APPIMAGEFILENAME.zsync /appimage/$APPIMAGEFILENAME
 ls /appimage/
