@@ -8,7 +8,6 @@ frameworks:
   build_kf5: true
   frameworks:
     - extra-cmake-modules
-    - pykde5
     - kcoreaddons
     - ki18n
     - kitemviews
@@ -54,51 +53,3 @@ dependencies:
       source:
         type: none
         url: ''
-  - qjson:
-      build:
-        buildsystem: cmake
-        buildoptions: '-DCMAKE_INSTALL_PREFIX:PATH=/opt/usr'
-      depname: qjson
-      source:
-        type: git
-        url: 'https://github.com/flavio/qjson'
-  - libdbusmenu-qt:
-      build:
-        buildsystem: cmake
-        buildoptions: '-DCMAKE_INSTALL_PREFIX:PATH=/opt/usr'
-      depname: libdbusmenu-qt
-      source:
-        type: bzr
-        url: 'lp:libdbusmenu-qt'
-  - gpgme:
-      build:
-        buildsystem: make
-        buildoptions: ''
-      depname: gpgme
-      source:
-        type: git
-        url: 'git://git.gnupg.org/gpgme.git'
-  # - gst-plugins-bad:
-  #     build:
-  #       buildsystem: make
-  #       buildoptions: ''
-  #     depname: gst-plugins-bad-1.10.2
-  #     source:
-  #       type: xz
-  #       url: 'https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-1.10.2.tar.xz'
-  # - gst-plugins-ugly:
-  #     build:
-  #       buildsystem: make
-  #       buildoptions: ''
-  #     depname: gst-plugins-ugly-1.10.2
-  #     source:
-  #       type: xz
-  #       url: 'https://gstreamer.freedesktop.org/src/gst-plugins-ugly/gst-plugins-ugly-1.10.2.tar.xz'
-  # - gst-libav:
-  #     build:
-  #       buildsystem: make
-  #       buildoptions: ''
-  #     depname: gst-libav-1.10.2
-  #     source:
-  #       type: xz
-  #       url: 'https://gstreamer.freedesktop.org/src/gst-libav/gst-libav-1.10.2.tar.xz'
