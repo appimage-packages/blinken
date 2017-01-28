@@ -8,6 +8,7 @@ frameworks:
   build_kf5: true
   frameworks:
     - extra-cmake-modules
+    - pykde5
     - kcoreaddons
     - ki18n
     - kitemviews
@@ -40,7 +41,6 @@ frameworks:
     - kwallet
     - kio
     - gpgmepp
-    - pykde5
 type: git
 url: http://anongit.kde.org/blinken
 buildsystem: cmake
