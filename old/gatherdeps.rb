@@ -37,7 +37,7 @@ class Dependencies
     def initialize(name)
       @name = name
       @base_dir = Dir.pwd() + '/'
-      @kf5_map = YAML.load_file('/in/frameworks.yaml')  
+    #  @kf5_map = YAML.load_file('/in/frameworks.yaml')  
       @cmake_deps = run_cmakedependencies
       @kf5 = []
       @external = []
