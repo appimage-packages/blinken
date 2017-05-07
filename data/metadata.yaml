@@ -1,13 +1,10 @@
 name: blinken
 binary: blinken
 packages:
-  - build-essential
+  - zsync
   #app specifc
-  - libgamin-dev
-  - media-player-info
+build_kf5: true
 frameworks:
-  build_kf5: true
-  frameworks:
     - extra-cmake-modules
     - kcoreaddons
     - ki18n
@@ -41,16 +38,9 @@ frameworks:
     - kwallet
     - kio
     - gpgmepp
+deps_on_kf5: false
 type: git
 url: http://anongit.kde.org/blinken
 buildsystem: cmake
-buildoptions: '-DCMAKE_INSTALL_PREFIX:PATH=/opt/usr -DKDE_INSTALL_SYSCONFDIR=/opt/etc -DBUILD_TESTING=OFF'
-dependencies:
-  - cpan:
-      build:
-        buildsystem: custom
-        buildoptions: cpan URI::Escape
-      depname: cpan
-      source:
-        type: none
-        url: ''
+buildoptions: '-DCMAKE_INSTALL_PREFIX:PATH=/app.Dir/usr -DKDE_INSTALL_SYSCONFDIR=/app.Dir/etc -DBUILD_TESTING=OFF'
+dependencies: false
