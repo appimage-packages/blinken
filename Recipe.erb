@@ -26,6 +26,9 @@ rm -f functions.sh
 
 cd /app.Dir
 
+if [ ! -d "$DIRECTORY" ]; then
+  mkdir ./etc
+fi
 cp /etc/mime.types ./etc/
 
 cp -rfv /usr/share/mime ./usr/share/
