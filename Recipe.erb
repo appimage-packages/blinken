@@ -25,8 +25,7 @@ wget -q https://github.com/probonopd/AppImages/raw/master/functions.sh -O ./func
 rm -f functions.sh
 
 cd /app.Dir
-
-if [ ! -d "/etc" ]; then
+if [ ! -d "./etc" ]; then
   mkdir ./etc
 fi
 cp /etc/mime.types ./etc/
@@ -35,8 +34,10 @@ cp -rfv /usr/share/mime ./usr/share/
 update-mime-database ./usr/share/mime
 
 # Run appimage once with QT_DEBUG_PLUGINS=1 to add missing ( linuxdeployqt should install correctly)
-mkdir -p ./plugins; cp -r /opt/usr/plugins/{bearer,generic} $_
-# Bring in kf5 plugins
+if [ ! -d "./plugins" ]; then
+  mkdir ./plugins
+fi
+cp -r /opt/usr/plugins/{platforms,bearer,generic,wayland*} ./plugins/
 mv /opt/usr/plugins/kf5/* ./plugins/ || true
 
 #move arch libs into same dir as rest
@@ -45,22 +46,27 @@ rmdir /opt/usr/lib/x86_64-linux-gnu/pkgconfig
 mv /opt/usr/lib/x86_64-linux-gnu/cmake/* /opt/usr/lib/cmake/
 rmdir /opt/usr/lib/x86_64-linux-gnu/cmake
 mv /opt/usr/lib/x86_64-linux-gnu/* /opt/usr/lib/
-
-mkdir ./lib
+if [ ! -d "./lib" ]; then
+  mkdir ./lib
+fi
 #Uncomment for sound
 cp -rfv /opt/usr/lib/qt5/plugins/phonon4qt5_backend  ./plugins/
 cp /opt/usr/bin/gst* ./usr/bin/
 rm -rfv /opt/usr/lib/gstreamer-1.0/include
-cp /opt/usr/lib/gstreamer-1.0/* ./lib/
+mv /opt/usr/lib/gstreamer-1.0 ./lib/
 cp /opt/usr/lib/pulseaudio/*.so* ./lib/
-mv /opt/usr/libexec/gstreamer-1.0/* ./usr/bin || true
+mv /opt/usr/libexec/gstreamer-1.0/* ./usr/bin/ || true
 
 rsync -aruxv --progress /opt/usr/resources/ ./usr/bin/
 rsync -aruxv --progress /opt/usr/translations/ ./usr/bin/
-mv /app.Dir/lib/* /opt/usr/lib/
+mv /app.Dir/lib/* /opt/usr/lib/ || true
+mv /app.Dir/usr/lib/x86_64-linux-gnu/plugins/* ./plugins/ || true
+rmdir /app.Dir/usr/lib/x86_64-linux-gnu/plugins || true
+mv /app.Dir/usr/lib/x86_64-linux-gnu/* /opt/usr/lib/ || true
 mv /opt/usr/libexec/Qt* ./usr/bin/ || true
 
 cd /
+/bin/bash -x /in/appstream.sh
 wget -c "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
 chmod +x linuxdeployqt-continuous-x86_64.AppImage
 ./linuxdeployqt-continuous-x86_64.AppImage --appimage-extract
@@ -96,7 +102,6 @@ rm -rf ./usr/share/man || true
 rm -rf ./usr/share/doc/ECM || true
 rm -rf ./usr/share/doc/libdbusmenu-qt5-doc || true
 rm -rf ./usr/share/gtk-doc || true
-rm -rf ./usr/share/wallpapers || true
 rm -rf ./usr/share/aclocal || true
 rm -rf ./usr/share/bash-completion || true
 rm -rf ./usr/share/common-lisp || true
@@ -106,9 +111,20 @@ rm -rf ./usr/share/gir-1.0 || true
 rm -rf ./usr/share/gnupg || true
 rm -rf ./usr/share/gobject-introspection-1.0 || true
 rm -rf ./usr/share/util-macros || true
+
+# Many assets are not needed... especially not twice (icons are rcc packaged)
+rm -rf usr/share/wallpapers
+rm -rf usr/share/icons/breeze_cursors
+rm -rf usr/share/icons/Breeze_Snow
+rm -rf usr/share/icons/breeze/{places,mimetypes,devices,apps,applets,actions,status,emotes,emblems}
+rm -rf usr/share/icons/breeze-dark/{places,mimetypes,devices,apps,applets,actions,status,emotes,emblems}
+rm -rf usr/share/doc
+rm -rf usr/share/emoticons
+
 find . -name '*.a' -exec rm {} \;
 find . -type f -executable -exec strip {} \;
 find . -type f -exec file {} \; | grep "not stripped"
+
 #Add back libkrb5
 cp /usr/lib/x86_64-linux-gnu/libkrb5* ./lib/
 
@@ -120,7 +136,10 @@ make clean
 make
 cp -v exec.so /app.Dir//exec_wrapper.so
 rm -rfv  /app/src/appimage-exec-wrapper
+
 cd /app.Dir/
+cp /app.Dir/usr/share/icons/hicolor/scalable/apps/<%= binary %>.svg .
+
 rm AppRun
 #Create AppRun
 cat > AppRun << EOF
@@ -139,8 +158,7 @@ export XDG_CONFIG_DIRS=\$HERE/.config:\$HERE/etc/xdg:\$XDG_CONFIG_DIRS
 export KDE_FORK_SLAVES=1
 export KF5_LIBEXEC_DIR=\$HERE/usr/bin
 export GST_PLUGIN_PATH=\$HERE/lib
-export GST_PLUGIN_SCANNER=\$HERE/bin
-export QT_STYLE_OVERRIDE=
+export GST_PLUGIN_SCANNER=\$HERE/usr/bin
 
 <%= binary %> $@
 
@@ -149,11 +167,8 @@ chmod +x AppRun
 
 cd ~
 
-
 #Appstream support for appimagetool
 rm -rfv /source/*
-
-
 
 #Re set LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=/opt/usr/lib:/opt/usr/lib/x86_64-linux-gnu:/usr/lib:/usr/lib64:/lib

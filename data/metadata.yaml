@@ -3,41 +3,8 @@ binary: blinken
 packages:
   - zsync
   #app specifc
-build_kf5: true
-frameworks:
-    - extra-cmake-modules
-    - kcoreaddons
-    - ki18n
-    - kitemviews
-    - kconfig
-    - polkit-qt-1
-    - kauth
-    - kcodecs
-    - karchive
-    - kdoctools
-    - kguiaddons
-    - kwidgetsaddons
-    - kconfigwidgets
-    - kiconthemes
-    - kcompletion
-    - kwindowsystem
-    - kcrash
-    - kdbusaddons
-    - kservice
-    - sonnet
-    - ktextwidgets
-    - kglobalaccel
-    - attica
-    - kxmlgui
-    - solid
-    - kbookmarks
-    - kjobwidgets
-    - phonon
-    - phonon-gstreamer
-    - knotifications
-    - kwallet
-    - kio
-    - gpgmepp
+build_kf5: false
+frameworks: false
 deps_on_kf5: false
 type: git
 url: http://anongit.kde.org/blinken
