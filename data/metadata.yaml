@@ -6,6 +6,8 @@ packages:
 build_kf5: false
 frameworks: false
 deps_on_kf5: false
+kde_deps:
+  - libkdegames
 type: git
 url: http://anongit.kde.org/blinken
 buildsystem: cmake
