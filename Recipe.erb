@@ -53,6 +53,9 @@ fi
 cp -rfv /opt/usr/lib/qt5/plugins/phonon4qt5_backend  ./plugins/
 cp /opt/usr/bin/gst* ./usr/bin/
 rm -rfv /opt/usr/lib/gstreamer-1.0/include
+if [ ! -d "./lib" ]; then
+  mkdir ./usr/lib
+fi
 mv /opt/usr/lib/gstreamer-1.0/* ./usr/lib/
 cp /opt/usr/lib/pulseaudio/*.so* ./lib/
 mv /opt/usr/libexec/gstreamer-1.0/* ./usr/bin/ || true
