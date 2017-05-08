@@ -53,7 +53,7 @@ fi
 cp -rfv /opt/usr/lib/qt5/plugins/phonon4qt5_backend  ./plugins/
 cp /opt/usr/bin/gst* ./usr/bin/
 rm -rfv /opt/usr/lib/gstreamer-1.0/include
-mv /opt/usr/lib/gstreamer-1.0 ./lib/
+mv /opt/usr/lib/gstreamer-1.0/* ./usr/lib/
 cp /opt/usr/lib/pulseaudio/*.so* ./lib/
 mv /opt/usr/libexec/gstreamer-1.0/* ./usr/bin/ || true
 
@@ -157,7 +157,7 @@ export XDG_DATA_HOME=\$HOME/.local/share
 export XDG_CONFIG_DIRS=\$HERE/.config:\$HERE/etc/xdg:\$XDG_CONFIG_DIRS
 export KDE_FORK_SLAVES=1
 export KF5_LIBEXEC_DIR=\$HERE/usr/bin
-export GST_PLUGIN_PATH=\$HERE/lib/gstreamer-1.0
+export GST_PLUGIN_PATH=\$HERE/usr/lib
 export GST_PLUGIN_SCANNER=\$HERE/usr/bin
 
 <%= binary %> $@
